@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/joewhite/HashParams/issues"
   },
-  "homepage": "https://github.com/joewhite/HashParams#readme"
+  "homepage": "https://github.com/joewhite/HashParams#readme",
+  "devDependencies": {
+    "karma": "^0.13.15"
+  }
 }
