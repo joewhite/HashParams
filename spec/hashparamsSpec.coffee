@@ -1,3 +1,3 @@
-describe 'math', ->
-    it 'works', ->
-        expect(1 + 1).toBe(2)
+describe 'HashParams', ->
+    it 'exists', ->
+        expect(HashParams).toBeDefined()
