@@ -1,0 +1,19 @@
+{
+  "name": "hashparams",
+  "version": "0.1.0",
+  "description": "Library for parsing and building key/value pairs in URL fragments (hashes).",
+  "main": "dist/hashparams.js",
+  "scripts": {
+    "test": "karma start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joewhite/HashParams.git"
+  },
+  "author": "Joe White",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/joewhite/HashParams/issues"
+  },
+  "homepage": "https://github.com/joewhite/HashParams#readme"
+}
