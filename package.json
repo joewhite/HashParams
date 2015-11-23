@@ -17,6 +17,11 @@
   },
   "homepage": "https://github.com/joewhite/HashParams#readme",
   "devDependencies": {
-    "karma": "^0.13.15"
+    "karma": "^0.13.15",
+    "karma-chrome-launcher": "^0.2.1",
+    "karma-coffee-preprocessor": "^0.3.0",
+    "karma-firefox-launcher": "^0.1.7",
+    "karma-ie-launcher": "^0.2.0",
+    "karma-jasmine": "^0.3.6"
   }
 }
