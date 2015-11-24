@@ -1,13 +1,20 @@
 describe 'HashParams', ->
-    describe 'given foreground and background', ->
-        params = null
-        beforeEach ->
-            params = new HashParams(
-                new HashParams.scalar('foreground'),
-                new HashParams.scalar('background'))
-        it 'initializes values.foreground and .background', ->
-            expect(params.values).toEqual {foreground: '', background: ''}
-        describe 'setHash', ->
+    describe 'initial state', ->
+        describe 'given foreground and background', ->
+            params = null
+            beforeEach ->
+                params = new HashParams(
+                    new HashParams.scalar('foreground'),
+                    new HashParams.scalar('background'))
+            it 'has empty strings for values.foreground and values.background', ->
+                expect(params.values).toEqual {foreground: '', background: ''}
+    describe '.setHash()', ->
+        describe 'given foreground and background', ->
+            params = null
+            beforeEach ->
+                params = new HashParams(
+                    new HashParams.scalar('foreground'),
+                    new HashParams.scalar('background'))
             it 'can set values.foreground', ->
                 params.setHash '#foreground=blue'
                 expect(params.values).toEqual {foreground: 'blue', background: ''}
