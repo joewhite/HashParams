@@ -1,0 +1,25 @@
+{
+  "name": "HashParams",
+  "version": "0.1.0",
+  "authors": [
+    "Joe White <git@excastle.com>"
+  ],
+  "description": "Treat a URL hash as a set of key/value pairs",
+  "main": "dist/hashparams.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "url",
+    "hash"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "karma.conf.js",
+    "node_modules",
+    "package.json",
+    "spec"
+  ]
+}

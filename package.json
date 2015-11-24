@@ -1,7 +1,7 @@
 {
   "name": "hashparams",
   "version": "0.1.0",
-  "description": "Library for parsing and building key/value pairs in URL fragments (hashes).",
+  "description": "Treat a URL hash as a set of key/value pairs",
   "main": "dist/hashparams.js",
   "scripts": {
     "test": "karma start"
