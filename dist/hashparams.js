@@ -11,17 +11,25 @@
         this.values = values;
     }
     HashParams.prototype = {
-        setHash: function(hash) {
-            hash = hash.replace(/^#/, "");
-            var pair = hash.split("=");
-            var newValues = {};
+        _hashToStrings: function(hash) {
+            var hashData = hash.replace(/^#/, "");
+            var result = {};
+            var pair = hashData.split("=");
+            result[pair[0]] = pair[1];
+            return result;
+        },
+        _mergeHashStrings: function(values, hashStrings) {
             _.each(this.params, function(param) {
-                newValues[param.name] = "";
-                if (param.name === pair[0]) {
-                    newValues[param.name] = pair[1];
+                values[param.name] = "";
+                if (param.name in hashStrings) {
+                    values[param.name] = hashStrings[param.name];
                 }
             });
-            this.values = newValues;
+            return values;
+        },
+        setHash: function(hash) {
+            var hashStrings = this._hashToStrings(hash);
+            this.values = this._mergeHashStrings({}, hashStrings);
         },
         with: function(name, value) {
             var newParams = new HashParams(this.params);
