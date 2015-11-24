@@ -1,7 +1,9 @@
 /* export HashParams */
+/* global _ */
 (function(window) {
     "use strict";
     function HashParams() {
+        this.params = _.clone(arguments);
         var values = {};
         for (var i = 0; i < arguments.length; ++i) {
             values[arguments[i].name] = "";
@@ -12,7 +14,14 @@
         setHash: function(hash) {
             hash = hash.replace(/^#/, "");
             var pair = hash.split("=");
-            this.values[pair[0]] = pair[1];
+            var newValues = {};
+            _.each(this.params, function(param) {
+                newValues[param.name] = "";
+                if (param.name === pair[0]) {
+                    newValues[param.name] = pair[1];
+                }
+            });
+            this.values = newValues;
         }
     };
     HashParams.scalar = function(name) {

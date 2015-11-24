@@ -14,6 +14,10 @@ describe 'HashParams', ->
             it 'can set values.background', ->
                 params.setHash '#background=green'
                 expect(params.values).toEqual {foreground: '', background: 'green'}
-            xit 'will not set values.foo', ->
+            it 'clears other values', ->
+                params.values.foreground = 'magenta'
+                params.setHash '#background=green'
+                expect(params.values).toEqual {foreground: '', background: 'green'}
+            it 'will not set values.foo', ->
                 params.setHash '#foo=bar'
                 expect(params.values).toEqual {foreground: '', background: ''}
