@@ -3,7 +3,7 @@
 (function(window) {
     "use strict";
     function HashParams() {
-        this.params = _.clone(arguments);
+        this.params = _.flatten(arguments);
         var values = {};
         for (var i = 0; i < arguments.length; ++i) {
             values[arguments[i].name] = "";
@@ -22,6 +22,12 @@
                 }
             });
             this.values = newValues;
+        },
+        with: function(name, value) {
+            var newParams = new HashParams(this.params);
+            newParams.values = _.clone(this.values);
+            newParams.values[name] = value;
+            return newParams;
         }
     };
     HashParams.scalar = function(name) {

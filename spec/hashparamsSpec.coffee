@@ -28,3 +28,21 @@ describe 'HashParams', ->
             it 'will not set values.foo', ->
                 params.setHash '#foo=bar'
                 expect(params.values).toEqual {foreground: '', background: ''}
+    describe '.with()', ->
+        describe 'given foreground=blue and background=green', ->
+            params = null
+            beforeEach ->
+                params = new HashParams(
+                    new HashParams.scalar('foreground'),
+                    new HashParams.scalar('background'))
+                params.values.foreground = 'blue'
+                params.values.background = 'green'
+            it 'can set background=red', ->
+                newParams = params.with('background', 'red')
+                expect(newParams.values).toEqual {foreground: 'blue', background: 'red'}
+            it 'does not modify original', ->
+                newParams = params.with('background', 'red')
+                expect(params.values).toEqual {foreground: 'blue', background: 'green'}
+            xit 'will not set values.foo', ->
+                newParams = params.with('foo', 'bar')
+                expect(newParams.values).toEqual {foreground: 'blue', background: 'green'}
