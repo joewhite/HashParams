@@ -146,3 +146,4 @@ describe 'HashParams', ->
             it 'accepts ~', -> accepts '~'
             it 'encodes ©', -> encodes '©', '%C2%A9'
             it 'encodes ▶', -> encodes '▶', '%E2%96%B6'
+            it 'encodes multiple characters', -> encodes ' |', '%20%7C'

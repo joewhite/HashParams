@@ -10,7 +10,7 @@
         _encode: function(string) {
             // Based on RFC 3986 (see http://stackoverflow.com/a/2849800/87399), but
             // we also encode ',', ';', and '=' since we give them special meaning.
-            return string.replace(/[^-!$&'()*+./0-9:?@A-Z_a-z~]/, encodeURIComponent);
+            return string.replace(/[^-!$&'()*+./0-9:?@A-Z_a-z~]/g, encodeURIComponent);
         },
         _getEmptyValues: function() {
             var values = {};
