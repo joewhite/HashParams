@@ -4,11 +4,7 @@
     "use strict";
     function HashParams() {
         this.params = _.flatten(arguments);
-        var values = {};
-        for (var i = 0; i < arguments.length; ++i) {
-            values[arguments[i].name] = "";
-        }
-        this.values = values;
+        this.setHash("");
     }
     HashParams.prototype = {
         _getEmptyValues: function() {
