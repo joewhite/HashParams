@@ -103,8 +103,6 @@ describe 'HashParams', ->
                 params.values['name' + decoded] = 'value' + decoded
                 expect(params.getHash()).toBe '#name' + encoded + '=value' + encoded
             accepts = (char) -> encodes char, char
-            # Based on RFC 3986 (see http://stackoverflow.com/a/2849800/87399), but
-            # we also encode ',', ';', and '=' since we give them special meaning.
             it 'encodes \\0', -> encodes '\0', '%00'
             it 'encodes \\n', -> encodes '\n', '%0A'
             it 'encodes space', -> encodes ' ', '%20'
