@@ -11,8 +11,8 @@ describe 'HashParams', ->
                 params = null
                 beforeEach ->
                     params = new HashParams(
-                        new HashParams.scalar('foreground'),
-                        new HashParams.scalar('background'))
+                        new HashParams.types.scalar('foreground'),
+                        new HashParams.types.scalar('background'))
                 it 'has empty strings for values.foreground and values.background', ->
                     expect(params.values).toEqual {foreground: '', background: ''}
             describe 'strings', ->
@@ -25,8 +25,8 @@ describe 'HashParams', ->
                 params = null
                 beforeEach ->
                     params = new HashParams([
-                        new HashParams.scalar('foreground'),
-                        new HashParams.scalar('background')
+                        new HashParams.types.scalar('foreground'),
+                        new HashParams.types.scalar('background')
                     ])
                 it 'has empty strings for values.foreground and values.background', ->
                     expect(params.values).toEqual {foreground: '', background: ''}

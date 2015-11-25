@@ -5,7 +5,7 @@
     function HashParams() {
         this.params = _(arguments).flatten().map(function(param, index) {
             if (typeof param === "string") {
-                return new HashParams.scalar(param);
+                return new HashParams.types.scalar(param);
             } else if (param && param.name) {
                 return param;
             } else {
@@ -64,8 +64,10 @@
             return newParams;
         }
     };
-    HashParams.scalar = function(name) {
-        this.name = name;
+    HashParams.types = {
+        scalar: function(name) {
+            this.name = name;
+        }
     };
     window.HashParams = HashParams;
 })(this);
