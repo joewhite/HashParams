@@ -17,8 +17,10 @@
         _hashToStrings: function(hash) {
             var hashData = hash.replace(/^#/, "");
             var result = {};
-            var pair = hashData.split("=");
-            result[pair[0]] = pair[1];
+            _.each(hashData.split(";"), function(arg) {
+                var pair = arg.split("=");
+                result[pair[0]] = pair[1];
+            });
             return result;
         },
         _mergeHashStrings: function(values, hashStrings) {
