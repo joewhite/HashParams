@@ -1,6 +1,12 @@
 describe 'HashParams', ->
-    describe 'initial state', ->
-        describe 'given foreground and background', ->
+    describe 'when constructed with', ->
+        describe 'nothing', ->
+            params = null
+            beforeEach ->
+                params = new HashParams()
+            it 'has no values', ->
+                expect(params.values).toEqual {}
+        describe 'foreground and background', ->
             params = null
             beforeEach ->
                 params = new HashParams(
@@ -9,7 +15,7 @@ describe 'HashParams', ->
             it 'has empty strings for values.foreground and values.background', ->
                 expect(params.values).toEqual {foreground: '', background: ''}
     describe '.setHash()', ->
-        describe 'given foreground and background', ->
+        describe 'when constructed with foreground and background', ->
             params = null
             beforeEach ->
                 params = new HashParams(
@@ -46,7 +52,7 @@ describe 'HashParams', ->
                 params.setHash '#foo=bar'
                 expect(params.values).toEqual {foreground: '', background: ''}
     describe '.with()', ->
-        describe 'given foreground=blue and background=green', ->
+        describe 'starting with foreground=blue and background=green', ->
             params = null
             beforeEach ->
                 params = new HashParams(
