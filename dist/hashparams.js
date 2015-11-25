@@ -7,6 +7,12 @@
         this.setHash("");
     }
     HashParams.prototype = {
+        _encode: function(string) {
+            return string.replace(/[^-!$&'()*+./0-9:?@A-Z_a-z~]/, function(value) {
+                var asciiCode = value.charCodeAt(0);
+                return "%" + ("0" + asciiCode.toString(16)).slice(-2).toUpperCase();
+            });
+        },
         _getEmptyValues: function() {
             var values = {};
             _.each(this.params, function(param) {
@@ -34,7 +40,7 @@
         getHash: function() {
             var segments = _(this.params).map(function(param) {
                 if (this.values[param.name]) {
-                    return param.name + "=" + this.values[param.name];
+                    return this._encode(param.name) + "=" + this._encode(this.values[param.name]);
                 }
             }, this).compact().value();
             return "#" + segments.join(";");

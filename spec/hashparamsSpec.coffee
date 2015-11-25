@@ -51,7 +51,7 @@ describe 'HashParams', ->
             it 'will not set values.foo', ->
                 params.setHash '#foo=bar'
                 expect(params.values).toEqual {foreground: '', background: ''}
-        describe 'unescaping', ->
+        describe 'unencoding', ->
             decodes = (encoded, decoded) ->
                 params = new HashParams(new HashParams.scalar('name' + decoded))
                 params.setHash '#name' + encoded + '=value' + encoded
@@ -62,6 +62,7 @@ describe 'HashParams', ->
             it 'decodes space', -> decodes '%20', ' '
             it 'decodes =', -> decodes '%3D', '='
             it 'accepts !', -> accepts '!'
+            it 'accepts $', -> accepts '$'
             it 'accepts &', -> accepts '&'
     describe '.with()', ->
         describe 'starting with foreground=blue and background=green', ->
@@ -96,3 +97,52 @@ describe 'HashParams', ->
             it 'with both values set', ->
                 params.values = {foreground: 'blue', background: 'green'}
                 expect(params.getHash()).toBe '#foreground=blue;background=green'
+        describe 'encoding', ->
+            encodes = (decoded, encoded) ->
+                params = new HashParams(new HashParams.scalar('name' + decoded))
+                params.values['name' + decoded] = 'value' + decoded
+                expect(params.getHash()).toBe '#name' + encoded + '=value' + encoded
+            accepts = (char) -> encodes char, char
+            # Based on RFC 3986 (see http://stackoverflow.com/a/2849800/87399), but
+            # we also encode ',', ';', and '=' since we give them special meaning.
+            it 'encodes \\0', -> encodes '\0', '%00'
+            it 'encodes \\n', -> encodes '\n', '%0A'
+            it 'encodes space', -> encodes ' ', '%20'
+            it 'accepts !', -> accepts '!'
+            it 'encodes "', -> encodes '"', '%22'
+            it 'encodes #', -> encodes '#', '%23'
+            it 'accepts $', -> accepts '$'
+            it 'encodes %', -> encodes '%', '%25'
+            it 'accepts &', -> accepts '&'
+            it 'accepts \'', -> accepts '\''
+            it 'accepts (', -> accepts '('
+            it 'accepts )', -> accepts ')'
+            it 'accepts *', -> accepts '*'
+            it 'accepts +', -> accepts '+'
+            it 'encodes ,', -> encodes ',', '%2C'
+            it 'accepts -', -> accepts '-'
+            it 'accepts .', -> accepts '.'
+            it 'accepts /', -> accepts '/'
+            it 'accepts 0', -> accepts '0'
+            it 'accepts 9', -> accepts '9'
+            it 'accepts :', -> accepts ':'
+            it 'encodes ;', -> encodes ';', '%3B'
+            it 'encodes <', -> encodes '<', '%3C'
+            it 'encodes =', -> encodes '=', '%3D'
+            it 'encodes >', -> encodes '>', '%3E'
+            it 'accepts ?', -> accepts '?'
+            it 'accepts @', -> accepts '@'
+            it 'accepts A', -> accepts 'A'
+            it 'accepts Z', -> accepts 'Z'
+            it 'encodes [', -> encodes '[', '%5B'
+            it 'encodes \\', -> encodes '\\', '%5C'
+            it 'encodes ]', -> encodes ']', '%5D'
+            it 'encodes ^', -> encodes '^', '%5E'
+            it 'accepts _', -> accepts '_'
+            it 'encodes `', -> encodes '`', '%60'
+            it 'accepts a', -> accepts 'a'
+            it 'accepts z', -> accepts 'z'
+            it 'encodes {', -> encodes '{', '%7B'
+            it 'encodes |', -> encodes '|', '%7C'
+            it 'encodes }', -> encodes '}', '%7D'
+            it 'accepts ~', -> accepts '~'
