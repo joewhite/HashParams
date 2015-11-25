@@ -31,6 +31,14 @@
             });
             return values;
         },
+        getHash: function() {
+            var segments = _(this.params).map(function(param) {
+                if (this.values[param.name]) {
+                    return param.name + "=" + this.values[param.name];
+                }
+            }, this).compact().value();
+            return "#" + segments.join(";");
+        },
         setHash: function(hash) {
             var hashStrings = this._hashToStrings(hash);
             this.values = this._mergeHashStrings(this._getEmptyValues(), hashStrings);

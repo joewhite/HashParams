@@ -69,3 +69,18 @@ describe 'HashParams', ->
             it 'will not set values.foo', ->
                 newParams = params.with('foo', 'bar')
                 expect(newParams.values).toEqual {foreground: 'blue', background: 'green'}
+    describe '.getHash()', ->
+        describe 'when constructed with foreground and background', ->
+            params = null
+            beforeEach ->
+                params = new HashParams(
+                    new HashParams.scalar('foreground'),
+                    new HashParams.scalar('background'))
+            it 'with no values set', ->
+                expect(params.getHash()).toBe '#'
+            it 'with one value set', ->
+                params.values.foreground = 'blue'
+                expect(params.getHash()).toBe '#foreground=blue'
+            it 'with both values set', ->
+                params.values = {foreground: 'blue', background: 'green'}
+                expect(params.getHash()).toBe '#foreground=blue;background=green'
