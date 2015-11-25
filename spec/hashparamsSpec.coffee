@@ -146,3 +146,5 @@ describe 'HashParams', ->
             it 'encodes |', -> encodes '|', '%7C'
             it 'encodes }', -> encodes '}', '%7D'
             it 'accepts ~', -> accepts '~'
+            it 'encodes ©', -> encodes '©', '%C2%A9'
+            it 'encodes ▶', -> encodes '▶', '%E2%96%B6'

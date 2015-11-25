@@ -8,10 +8,7 @@
     }
     HashParams.prototype = {
         _encode: function(string) {
-            return string.replace(/[^-!$&'()*+./0-9:?@A-Z_a-z~]/, function(value) {
-                var asciiCode = value.charCodeAt(0);
-                return "%" + ("0" + asciiCode.toString(16)).slice(-2).toUpperCase();
-            });
+            return string.replace(/[^-!$&'()*+./0-9:?@A-Z_a-z~]/, encodeURIComponent);
         },
         _getEmptyValues: function() {
             var values = {};
