@@ -11,6 +11,13 @@
         this.values = values;
     }
     HashParams.prototype = {
+        _getEmptyValues: function() {
+            var values = {};
+            _.each(this.params, function(param) {
+                values[param.name] = "";
+            });
+            return values;
+        },
         _hashToStrings: function(hash) {
             var hashData = hash.replace(/^#/, "");
             var result = {};
@@ -20,7 +27,6 @@
         },
         _mergeHashStrings: function(values, hashStrings) {
             _.each(this.params, function(param) {
-                values[param.name] = "";
                 if (param.name in hashStrings) {
                     values[param.name] = hashStrings[param.name];
                 }
@@ -29,12 +35,13 @@
         },
         setHash: function(hash) {
             var hashStrings = this._hashToStrings(hash);
-            this.values = this._mergeHashStrings({}, hashStrings);
+            this.values = this._mergeHashStrings(this._getEmptyValues(), hashStrings);
         },
         with: function(name, value) {
             var newParams = new HashParams(this.params);
-            newParams.values = _.clone(this.values);
-            newParams.values[name] = value;
+            var newStrings = {};
+            newStrings[name] = value;
+            newParams.values = this._mergeHashStrings(_.clone(this.values), newStrings);
             return newParams;
         }
     };

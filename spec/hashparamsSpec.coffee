@@ -43,6 +43,6 @@ describe 'HashParams', ->
             it 'does not modify original', ->
                 newParams = params.with('background', 'red')
                 expect(params.values).toEqual {foreground: 'blue', background: 'green'}
-            xit 'will not set values.foo', ->
+            it 'will not set values.foo', ->
                 newParams = params.with('foo', 'bar')
                 expect(newParams.values).toEqual {foreground: 'blue', background: 'green'}
