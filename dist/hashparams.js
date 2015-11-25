@@ -15,7 +15,7 @@
             return values;
         },
         _hashToStrings: function(hash) {
-            var hashData = hash.replace(/^#/, "");
+            var hashData = (hash || "").replace(/^#/, "");
             var result = {};
             _.each(hashData.split(";"), function(arg) {
                 var pair = arg.split("=");

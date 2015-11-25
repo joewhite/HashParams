@@ -15,6 +15,20 @@ describe 'HashParams', ->
                 params = new HashParams(
                     new HashParams.scalar('foreground'),
                     new HashParams.scalar('background'))
+            describe 'resets to empty', ->
+                beforeEach -> params.values = {foreground: 'blue', background: 'green'}
+                it 'when passed just a hash character', ->
+                    params.setHash '#'
+                    expect(params.values).toEqual {foreground: '', background: ''}
+                it 'when passed an empty string', ->
+                    params.setHash ''
+                    expect(params.values).toEqual {foreground: '', background: ''}
+                it 'when passed undefined', ->
+                    params.setHash undefined
+                    expect(params.values).toEqual {foreground: '', background: ''}
+                it 'when passed null', ->
+                    params.setHash null
+                    expect(params.values).toEqual {foreground: '', background: ''}
             it 'can set values.foreground', ->
                 params.setHash '#foreground=blue'
                 expect(params.values).toEqual {foreground: 'blue', background: ''}
