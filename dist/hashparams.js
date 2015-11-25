@@ -3,7 +3,15 @@
 (function(window) {
     "use strict";
     function HashParams() {
-        this.params = _.flatten(arguments);
+        this.params = _(arguments).flatten().map(function(param, index) {
+            if (typeof param === "string") {
+                return new HashParams.scalar(param);
+            } else if (param && param.name) {
+                return param;
+            } else {
+                throw new Error("HashParams: Invalid parameter definition at index " + index);
+            }
+        }).value();
         this.setHash("");
     }
     HashParams.prototype = {

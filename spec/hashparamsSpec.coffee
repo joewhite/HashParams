@@ -6,21 +6,41 @@ describe 'HashParams', ->
                 params = new HashParams()
             it 'has no values', ->
                 expect(params.values).toEqual {}
-        describe 'foreground and background', ->
-            params = null
-            beforeEach ->
-                params = new HashParams(
-                    new HashParams.scalar('foreground'),
-                    new HashParams.scalar('background'))
-            it 'has empty strings for values.foreground and values.background', ->
-                expect(params.values).toEqual {foreground: '', background: ''}
+        describe 'foreground and background as', ->
+            describe 'scalars', ->
+                params = null
+                beforeEach ->
+                    params = new HashParams(
+                        new HashParams.scalar('foreground'),
+                        new HashParams.scalar('background'))
+                it 'has empty strings for values.foreground and values.background', ->
+                    expect(params.values).toEqual {foreground: '', background: ''}
+            describe 'strings', ->
+                params = null
+                beforeEach ->
+                    params = new HashParams('foreground', 'background')
+                it 'has empty strings for values.foreground and values.background', ->
+                    expect(params.values).toEqual {foreground: '', background: ''}
+            describe 'array of scalars', ->
+                params = null
+                beforeEach ->
+                    params = new HashParams([
+                        new HashParams.scalar('foreground'),
+                        new HashParams.scalar('background')
+                    ])
+                it 'has empty strings for values.foreground and values.background', ->
+                    expect(params.values).toEqual {foreground: '', background: ''}
+        describe 'invalid value', ->
+            expectInvalidParameter = (value) ->
+                expect(-> new HashParams(value)).toThrowError /Invalid parameter definition/
+            it 'undefined', -> expectInvalidParameter undefined
+            it 'null', -> expectInvalidParameter null
+            it 'empty object', -> expectInvalidParameter {}
     describe '.setHash()', ->
         describe 'when constructed with foreground and background', ->
             params = null
             beforeEach ->
-                params = new HashParams(
-                    new HashParams.scalar('foreground'),
-                    new HashParams.scalar('background'))
+                params = new HashParams('foreground', 'background')
             describe 'resets to empty', ->
                 beforeEach -> params.values = {foreground: 'blue', background: 'green'}
                 it 'when passed just a hash character', ->
@@ -53,7 +73,7 @@ describe 'HashParams', ->
                 expect(params.values).toEqual {foreground: '', background: ''}
         describe 'unencoding', ->
             decodes = (encoded, decoded) ->
-                params = new HashParams(new HashParams.scalar('name' + decoded))
+                params = new HashParams('name' + decoded)
                 params.setHash '#name' + encoded + '=value' + encoded
                 expected = {}
                 expected['name' + decoded] = 'value' + decoded
@@ -68,9 +88,7 @@ describe 'HashParams', ->
         describe 'starting with foreground=blue and background=green', ->
             params = null
             beforeEach ->
-                params = new HashParams(
-                    new HashParams.scalar('foreground'),
-                    new HashParams.scalar('background'))
+                params = new HashParams('foreground', 'background')
                 params.values.foreground = 'blue'
                 params.values.background = 'green'
             it 'can set background=red', ->
@@ -86,9 +104,7 @@ describe 'HashParams', ->
         describe 'when constructed with foreground and background', ->
             params = null
             beforeEach ->
-                params = new HashParams(
-                    new HashParams.scalar('foreground'),
-                    new HashParams.scalar('background'))
+                params = new HashParams('foreground', 'background')
             it 'with no values set', ->
                 expect(params.getHash()).toBe '#'
             it 'with one value set', ->
@@ -99,7 +115,7 @@ describe 'HashParams', ->
                 expect(params.getHash()).toBe '#foreground=blue;background=green'
         describe 'encoding', ->
             encodes = (decoded, encoded) ->
-                params = new HashParams(new HashParams.scalar('name' + decoded))
+                params = new HashParams('name' + decoded)
                 params.values['name' + decoded] = 'value' + decoded
                 expect(params.getHash()).toBe '#name' + encoded + '=value' + encoded
             accepts = (char) -> encodes char, char
