@@ -19,7 +19,7 @@
             var result = {};
             _.each(hashData.split(";"), function(arg) {
                 var pair = arg.split("=");
-                result[pair[0]] = pair[1];
+                result[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
             });
             return result;
         },

@@ -51,6 +51,18 @@ describe 'HashParams', ->
             it 'will not set values.foo', ->
                 params.setHash '#foo=bar'
                 expect(params.values).toEqual {foreground: '', background: ''}
+        describe 'unescaping', ->
+            decodes = (encoded, decoded) ->
+                params = new HashParams(new HashParams.scalar('name' + decoded))
+                params.setHash '#name' + encoded + '=value' + encoded
+                expected = {}
+                expected['name' + decoded] = 'value' + decoded
+                expect(params.values).toEqual expected
+            accepts = (char) -> decodes char, char
+            it 'decodes space', -> decodes '%20', ' '
+            it 'decodes =', -> decodes '%3D', '='
+            it 'accepts !', -> accepts '!'
+            it 'accepts &', -> accepts '&'
     describe '.with()', ->
         describe 'starting with foreground=blue and background=green', ->
             params = null
