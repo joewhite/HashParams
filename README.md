@@ -160,15 +160,15 @@ You can start the tests with:
 ## Roadmap
 
 * Features likely to be added in the near future (because I need them for a project):
-** Parameters of type `sortedArray` (e.g., `#tags=b,a` would result in `values.tags = ["a", "b"]`). Likely constructor syntax: `new HashParams("tags:sortedArray")`.
+    * Parameters of type `sortedArray` (e.g., `#tags=b,a` would result in `values.tags = ["a", "b"]`). Likely constructor syntax: `new HashParams("tags:sortedArray")`.
 * Possible future features (ones I don't actually need, but may implement anyway):
-** Support query strings as well as hashes.
-** Parameters of type `array`.
-** Parameters of type `number` (e.g. `#volume=11` would result in `values.volume = 11` as a number, rather than as a string). Likely constructor syntax: `new HashParams("volume:number"`).
-** Combined types, e.g. `tabStops:sortedArray<number>`.
-** Wildcards, e.g. `*:string`.
-** Regular expressions for parameter names?
-** Maybe routing? `new HashParams("/products/:id:number", "foreground")` + `params.setHash("/products/5;foreground=green")` could yield `params.values = {id: 5, foreground: "green"}`. You'd also need a way to name the routes so `values` could tell you which route it matched. Suggestions welcome.
+    * Support query strings as well as hashes.
+    * Parameters of type `array`.
+    * Parameters of type `number` (e.g. `#volume=11` would result in `values.volume = 11` as a number, rather than as a string). Likely constructor syntax: `new HashParams("volume:number"`).
+    * Combined types, e.g. `tabStops:sortedArray<number>`.
+    * Wildcards, e.g. `*:string`.
+    * Regular expressions for parameter names?
+    * Maybe routing? `new HashParams("/products/:id:number", "foreground")` + `params.setHash("/products/5;foreground=green")` could yield `params.values = {id: 5, foreground: "green"}`. You'd also need a way to name the routes so `values` could tell you which route it matched. Suggestions welcome.
 
 If you want something from the "possible future features" list, or something else not listed here, feel free to write up an issue, along with any details about how you'd like to use it. (Or better yet, send a pull request.)
 
