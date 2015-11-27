@@ -1,19 +1,19 @@
 # HashParams
 
-HashParams is a JavaScript library that lets you treat a URL hash (the spec calls it the "fragment identifier") as a set of named parameters. You can parse hash strings and build new ones.
+HashParams is a JavaScript library that lets you treat a URL hash ([officially](https://tools.ietf.org/html/rfc3986#section-3.5) the "fragment identifier") as a set of named parameters. You can parse hash strings and build new ones.
 
 ```javascript
-// User is on page.html#foreground=blue;background=green
+// User is on page.html#foreground=blue;background=green. We can parse the hash:
 var params = new HashParams("foreground", "background");
 params.setHash(window.location.hash);
-// Now params.values is {foreground: blue, background: green}.
+// Now params.values is {foreground: "blue", background: "green"}.
 
 // To build a hyperlink that changes foreground:
 var newUrl = params.with("foreground", "red").getHash();
 // newUrl is "#foreground=red;background=green"
 ```
 
-HashParams is tested in the evergreen browsers (FireFox, Chrome, and IE 11). It may or may not work in older versions of IE.
+HashParams is tested in the evergreen browsers (FireFox, Chrome, and IE 11). It may or may not work in older browsers.
 
 ## Typical usage without React.js
 
@@ -55,7 +55,9 @@ var ... = React.createComponent(
 );
 ```
 
-## Constructor
+## HashParams documentation
+
+### Constructor
 
 The `HashParams` constructor takes a list of parameter names that your page expects. You can pass either strings or an array:
 
@@ -64,7 +66,7 @@ new HashParams("foreground", "background")
 new HashParams(["foreground", "background"])
 ```
 
-Parameter names can contain any characters from the Unicode Basic Multilingual Plane ("BMP", U+0000 through U+FFFF) except colon (`:`), asterisk (`*`), and slash (`/`), which are reserved for future use.
+Parameter names can contain any characters from the Unicode Basic Multilingual Plane (U+0000 through U+FFFF) except colon (`:`), asterisk (`*`), and slash (`/`), which are reserved for future use.
 
 If you want, you can also pass instances of `HashParams.types.scalar`.
 
@@ -74,7 +76,7 @@ new HashParams(new HashParams.types.scalar("foreground"))
 
 The current version does not support wildcards; you need to explicitly list every parameter name your page will use.
 
-## values
+### values
 
 The `values` property contains the currently-parsed parameter values, as a JavaScript object.
 
@@ -87,7 +89,7 @@ expect(params.values).toEqual({foreground: "", background: ""});
 
 You can modify `values`, though in many cases it's better to use the `with` method (see below).
 
-## setHash(hashString)
+### setHash(hashString)
 
 The `setHash` method takes a string of the form `#name1=value1;name2=value2` and parses its values into the `values` property.
 
@@ -112,7 +114,7 @@ params.setHash("#foreground=red");
 expect(params.values).toEqual({foreground: "red", background: ""});
 ```
 
-## with(parameterName, newValue)
+### with(parameterName, newValue)
 
 The `with` method returns a new clone of the `HashParams` object, with a new value for the specified parameter.
 
@@ -131,7 +133,7 @@ Typically you would call `with` and then immediately call `getHash` on the resul
 <a href={params.with("foreground", "red").getHash()}>Change foreground to red</a>
 ```
 
-## getHash()
+### getHash()
 
 The `getHash` method turns `values` back into a hash string.
 
