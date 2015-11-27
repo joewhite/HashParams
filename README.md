@@ -151,3 +151,7 @@ If you want something from the "possible future features" list, or something els
 ## Release history
 
 * 0.1.0: First release. Scalar string values only. `setHash`, `with`, and `getHash` methods.
+
+## License
+
+MIT
