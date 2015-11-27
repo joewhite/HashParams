@@ -2,65 +2,75 @@
 
 HashParams is a JavaScript library that lets you treat a URL hash (the spec calls it the "fragment identifier") as a set of named parameters. You can parse hash strings and build new ones.
 
-    // User is on page.html#foreground=blue;background=green
-    var params = new HashParams("foreground", "background");
-    params.setHash(window.location.hash);
-    // Now params.values is {foreground: blue, background: green}.
+```javascript
+// User is on page.html#foreground=blue;background=green
+var params = new HashParams("foreground", "background");
+params.setHash(window.location.hash);
+// Now params.values is {foreground: blue, background: green}.
 
-    // To build a hyperlink that changes foreground:
-    var newUrl = params.with("foreground", "red").getHash();
-    // newUrl is "#foreground=red;background=green"
+// To build a hyperlink that changes foreground:
+var newUrl = params.with("foreground", "red").getHash();
+// newUrl is "#foreground=red;background=green"
+```
 
 HashParams is tested in the evergreen browsers (FireFox, Chrome, and IE 11). It may or may not work in older versions of IE.
 
 ## Typical usage without React.js
 
-    var params = new HashParams("foreground", "background");
-    function hashChanged() {
-        params.setHash(window.location.hash);
-        // do something with params.values
-    }
-    window.addEventListener("hashchange", hashChanged);
-    hashChanged();
+```javascript
+var params = new HashParams("foreground", "background");
+function hashChanged() {
+    params.setHash(window.location.hash);
+    // do something with params.values
+}
+window.addEventListener("hashchange", hashChanged);
+hashChanged();
+```
 
 ## Typical usage with React.js
 
-    // In one of your React components:
-    var ... = React.createComponent(
-        ...
-        getInitialState: function() {
-            return {
-                paramValues: {}
-            };
-        },
-        componentDidMount: function() {
-            var params = new HashParams("foreground", "background");
-            var self = this;
-            function hashChanged() {
-                params.setHash(window.location.hash);
-                self.setState({paramValues: params.values});
-            }
-            window.addEventListener("hashchange", hashChanged);
-            hashChanged();
-        },
-        render: function() {
-            // do something with this.state.paramValues
-        },
-        ...
-    );
+```javascript
+// In one of your React components:
+var ... = React.createComponent(
+    ...
+    getInitialState: function() {
+        return {
+            paramValues: {}
+        };
+    },
+    componentDidMount: function() {
+        var params = new HashParams("foreground", "background");
+        var self = this;
+        function hashChanged() {
+            params.setHash(window.location.hash);
+            self.setState({paramValues: params.values});
+        }
+        window.addEventListener("hashchange", hashChanged);
+        hashChanged();
+    },
+    render: function() {
+        // do something with this.state.paramValues
+    },
+    ...
+);
+```
 
 ## Constructor
 
 The `HashParams` constructor takes a list of parameter names that your page expects. You can pass either strings or an array:
 
-    new HashParams("foreground", "background")
-    new HashParams(["foreground", "background"])
+```javascript
+new HashParams("foreground", "background")
+new HashParams(["foreground", "background"])
+```
 
 Parameter names can contain any characters from the Unicode Basic Multilingual Plane ("BMP", U+0000 through U+FFFF) except colon (`:`), asterisk (`*`), and slash (`/`), which are reserved for future use.
 
 If you want, you can also pass instances of `HashParams.types.scalar`.
 
-    new HashParams(new HashParams.types.scalar("foreground"))
+```javascript
+new HashParams(new HashParams.types.scalar("foreground"))
+```
 
 The current version does not support wildcards; you need to explicitly list every parameter name your page will use.
 
@@ -70,8 +80,10 @@ The `values` property contains the currently-parsed parameter values, as a JavaS
 
 When the `HashParams` instance is first created, `values` contains an empty string for each parameter:
 
-    var params = new HashParams("foreground", "background");
-    expect(params.values).toEqual({foreground: "", background: ""});
+```javascript
+var params = new HashParams("foreground", "background");
+expect(params.values).toEqual({foreground: "", background: ""});
+```
 
 You can modify `values`, though in many cases it's better to use the `with` method (see below).
 
@@ -79,9 +91,11 @@ You can modify `values`, though in many cases it's better to use the `with` meth
 
 The `setHash` method takes a string of the form `#name1=value1;name2=value2` and parses its values into the `values` property.
 
-    var params = new HashParams("foreground", "background");
-    params.setHash("#foreground=blue;background=green");
-    expect(params.values).toEqual({foreground: "blue", background: "green"});
+```javascript
+var params = new HashParams("foreground", "background");
+params.setHash("#foreground=blue;background=green");
+expect(params.values).toEqual({foreground: "blue", background: "green"});
+```
 
 Typically you would pass `window.location.hash` as the value.
 
@@ -89,27 +103,33 @@ The hash string can contain any characters from the Unicode Basic Multilingual P
 
 To ensure proper behavior as you navigate backwards and forwards through browser history, `setHash` clears any parameter values that are not included in the hash string:
 
-    var params = new HashParams("foreground", "background");
-    params.setHash("#foreground=blue;background=green");
-    // Then later:
-    params.setHash("#foreground=red");
-    // Now values.background has been reset to ""
-    expect(params.values).toEqual({foreground: "red", background: ""});
+```javascript
+var params = new HashParams("foreground", "background");
+params.setHash("#foreground=blue;background=green");
+// Then later:
+params.setHash("#foreground=red");
+// Now values.background has been reset to ""
+expect(params.values).toEqual({foreground: "red", background: ""});
+```
 
 ## with(parameterName, newValue)
 
 The `with` method returns a new clone of the `HashParams` object, with a new value for the specified parameter.
 
-    var params = new HashParams("foreground", "background");
-    params.setHash("#foreground=blue;background=green");
-    var newParams = params.with("foreground", "red");
-    expect(newParams.values).toEqual({foreground: "red", background: "green"});
+```javascript
+var params = new HashParams("foreground", "background");
+params.setHash("#foreground=blue;background=green");
+var newParams = params.with("foreground", "red");
+expect(newParams.values).toEqual({foreground: "red", background: "green"});
+```
 
 The original `HashParams` instance is not modified.
 
 Typically you would call `with` and then immediately call `getHash` on the result, and put the resulting URL into a hyperlink. For example, in React:
 
-    <a href={params.with("foreground", "red").getHash()}>Change foreground to red</a>
+```html
+<a href={params.with("foreground", "red").getHash()}>Change foreground to red</a>
+```
 
 ## getHash()
 
@@ -117,9 +137,11 @@ The `getHash` method turns `values` back into a hash string.
 
 Parameters are always listed in a deterministic order; specifically, the same order their names were originally passed to the constructor. Parameters whose values are empty strings are omitted.
 
-    var params = new HashParams("foreground", "background", "highlight");
-    params.values = {background: "green", foreground: "blue", highlight: ""};
-    expect(params.getHash()).toBe("#foreground=blue;background=green");
+```javascript
+var params = new HashParams("foreground", "background", "highlight");
+params.values = {background: "green", foreground: "blue", highlight: ""};
+expect(params.getHash()).toBe("#foreground=blue;background=green");
+```
 
 ## Editing the code
 
