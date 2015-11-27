@@ -11,7 +11,7 @@ HashParams is a JavaScript library that lets you treat a URL hash (the spec call
     var newUrl = params.with("foreground", "red").getHash();
     // newUrl is "#foreground=red;background=green"
 
-HashParams depends on the lodash library.
+HashParams is tested in the evergreen browsers (FireFox, Chrome, and IE 11). It may or may not work in older versions of IE.
 
 ## Typical usage without React.js
 
@@ -121,17 +121,30 @@ Parameters are always listed in a deterministic order; specifically, the same or
     params.values = {background: "green", foreground: "blue", highlight: ""};
     expect(params.getHash()).toBe("#foreground=blue;background=green");
 
+## Editing the code
+
+If you want to hack on the code, you'll need to install [Node.js + npm](https://nodejs.org/) and karma-cli (`npm install -g karma-cli`). You'll also need [Python](https://www.python.org/) 2.7 (*not* version 3 or later, because for some ungodly reason the Karma test runner chooses to depend on technology that was obsolete back in 2008).
+
+Then fork the HashParams repository, check out, and run:
+
+    npm install
+
+You can start the tests with:
+
+    npm test
+
 ## Roadmap
 
 * Features likely to be added in the near future (because I need them for a project):
 ** Parameters of type `sortedArray` (e.g., `#tags=b,a` would result in `values.tags = ["a", "b"]`). Likely constructor syntax: `new HashParams("tags:sortedArray")`.
 * Possible future features (ones I don't actually need, but may implement anyway):
-** Routing syntax (e.g. `#/myRoute;foreground=red` would result in `values = {"/": "myRoute", "foreground": "red"}`). This probably wouldn't do more than let you leave out the `=` between `/` and `myRoute`; the actual routing would be up to you. Likely constructor syntax: `new HashParams("/", "foreground")`.
+** Support query strings as well as hashes.
 ** Parameters of type `array`.
 ** Parameters of type `number` (e.g. `#volume=11` would result in `values.volume = 11` as a number, rather than as a string). Likely constructor syntax: `new HashParams("volume:number"`).
 ** Combined types, e.g. `tabStops:sortedArray<number>`.
 ** Wildcards, e.g. `*:string`.
 ** Regular expressions for parameter names?
+** Maybe routing? `new HashParams("/products/:id:number", "foreground")` + `params.setHash("/products/5;foreground=green")` could yield `params.values = {id: 5, foreground: "green"}`. You'd also need a way to name the routes so `values` could tell you which route it matched. Suggestions welcome.
 
 If you want something from the "possible future features" list, or something else not listed here, feel free to write up an issue, along with any details about how you'd like to use it. (Or better yet, send a pull request.)
 

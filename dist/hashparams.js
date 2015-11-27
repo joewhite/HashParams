@@ -1,9 +1,14 @@
 /* export HashParams */
-/* global _ */
 (function(window) {
     "use strict";
     function HashParams() {
-        this.params = _(arguments).flatten().map(function(param, index) {
+        var params;
+        if (Array.isArray(arguments[0])) {
+            params = arguments[0];
+        } else {
+            params = Array.prototype.slice.call(arguments);
+        }
+        this.params = params.map(function(param, index) {
             if (typeof param === "string") {
                 return new HashParams.types.scalar(param);
             } else if (param && param.name) {
@@ -11,10 +16,19 @@
             } else {
                 throw new Error("HashParams: Invalid parameter definition at index " + index);
             }
-        }).value();
+        });
         this.setHash("");
     }
     HashParams.prototype = {
+        _cloneValues: function() {
+            var newValues = {};
+            this.params.forEach(function(param) {
+                if (param.name in this.values) {
+                    newValues[param.name] = this.values[param.name];
+                }
+            }, this);
+            return newValues;
+        },
         _encode: function(string) {
             // Based on RFC 3986 (see http://stackoverflow.com/a/2849800/87399), but
             // we also encode ',', ';', and '=' since we give them special meaning.
@@ -22,7 +36,7 @@
         },
         _getEmptyValues: function() {
             var values = {};
-            _.each(this.params, function(param) {
+            this.params.forEach(function(param) {
                 values[param.name] = "";
             });
             return values;
@@ -30,14 +44,14 @@
         _hashToStrings: function(hash) {
             var hashData = (hash || "").replace(/^#/, "");
             var result = {};
-            _.each(hashData.split(";"), function(arg) {
+            hashData.split(";").forEach(function(arg) {
                 var pair = arg.split("=");
                 result[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
             });
             return result;
         },
         _mergeHashStrings: function(values, hashStrings) {
-            _.each(this.params, function(param) {
+            this.params.forEach(function(param) {
                 if (param.name in hashStrings) {
                     values[param.name] = hashStrings[param.name];
                 }
@@ -45,11 +59,13 @@
             return values;
         },
         getHash: function() {
-            var segments = _(this.params).map(function(param) {
+            var segments = [];
+            this.params.forEach(function(param) {
                 if (this.values[param.name]) {
-                    return this._encode(param.name) + "=" + this._encode(this.values[param.name]);
+                    var segment = this._encode(param.name) + "=" + this._encode(this.values[param.name]);
+                    segments.push(segment);
                 }
-            }, this).compact().value();
+            }, this);
             return "#" + segments.join(";");
         },
         setHash: function(hash) {
@@ -60,7 +76,7 @@
             var newParams = new HashParams(this.params);
             var newStrings = {};
             newStrings[name] = value;
-            newParams.values = this._mergeHashStrings(_.clone(this.values), newStrings);
+            newParams.values = this._mergeHashStrings(this._cloneValues(), newStrings);
             return newParams;
         }
     };
