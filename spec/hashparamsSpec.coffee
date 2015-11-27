@@ -113,6 +113,15 @@ describe 'HashParams', ->
             it 'with both values set', ->
                 params.values = {foreground: 'blue', background: 'green'}
                 expect(params.getHash()).toBe '#foreground=blue;background=green'
+            it 'with one value missing', ->
+                params.values = {foreground: 'blue'}
+                expect(params.getHash()).toBe "#foreground=blue"
+            it 'with undefined for one value', ->
+                params.values = {foreground: 'blue', background: undefined}
+                expect(params.getHash()).toBe "#foreground=blue"
+            it 'with null for one value', ->
+                params.values = {foreground: 'blue', background: null}
+                expect(params.getHash()).toBe "#foreground=blue"
         describe 'encoding', ->
             encodes = (decoded, encoded) ->
                 params = new HashParams('name' + decoded)
