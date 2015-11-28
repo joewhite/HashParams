@@ -15,6 +15,14 @@ var newUrl = params.with("foreground", "red").getHash();
 
 HashParams is tested in the evergreen browsers (FireFox, Chrome, and IE 11). It may or may not work in older browsers.
 
+## Installing
+
+You can install the latest release of HashParams using bower:
+
+    bower install hashparams
+
+Or get the bleeding-edge version by grabbing [hashparams.js](raw/master/dist/hashparams.js) from the [dist](tree/master/dist) folder.
+
 ## Typical usage without React.js
 
 ```javascript
