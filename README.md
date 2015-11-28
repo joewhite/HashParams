@@ -186,4 +186,4 @@ If you want something from the "possible future features" list, or something els
 
 ## License
 
-MIT
+[MIT license](https://opensource.org/licenses/MIT)
