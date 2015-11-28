@@ -99,7 +99,7 @@ You can modify `values`, though in many cases it's better to use the `with` meth
 
 ### setHash(hashString)
 
-The `setHash` method takes a string of the form `#name1=value1;name2=value2` and parses its values into the `values` property.
+The `setHash` method takes a string of the form `#name1=value1;name2=value2` (the leading `#` is optional) and parses its values into the `values` property.
 
 ```javascript
 var params = new HashParams("foreground", "background");
@@ -109,7 +109,7 @@ expect(params.values).toEqual({foreground: "blue", background: "green"});
 
 Typically you would pass `window.location.hash` as the value.
 
-The hash string can contain any characters from the Unicode Basic Multilingual Plane (U+0000 through U+FFFF), but probably won't work with surrogate pairs.
+The hash string can contain any characters from the Unicode Basic Multilingual Plane (U+0000 through U+FFFF), but probably won't work with UTF-16 surrogate pairs.
 
 To ensure proper behavior as you navigate backwards and forwards through browser history, `setHash` clears any parameter values that are not included in the hash string:
 
