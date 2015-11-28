@@ -3,8 +3,9 @@
 HashParams is a JavaScript library that lets you treat a URL hash ([officially](https://tools.ietf.org/html/rfc3986#section-3.5) the "fragment identifier") as a set of named parameters. You can parse hash strings and build new ones.
 
 ```javascript
-// User is on page.html#foreground=blue;background=green. We can parse the hash:
 var params = new HashParams("foreground", "background");
+
+// User is on page.html#foreground=blue;background=green. We can parse the hash:
 params.setHash(window.location.hash);
 // Now params.values is {foreground: "blue", background: "green"}.
 
