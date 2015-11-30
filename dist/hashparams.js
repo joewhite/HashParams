@@ -67,12 +67,15 @@
             });
             return result;
         },
+        _mergeHashString: function(values, name, hashString) {
+            var param = this._findParam(name);
+            if (param) {
+                values[name] = hashString;
+            }
+        },
         _mergeHashStrings: function(values, hashStrings) {
             for (var name in hashStrings) {
-                var param = this._findParam(name);
-                if (param) {
-                    values[name] = hashStrings[name];
-                }
+                this._mergeHashString(values, name, hashStrings[name]);
             }
             return values;
         },
