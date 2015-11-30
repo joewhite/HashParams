@@ -58,8 +58,11 @@
                 var pair = arg.split("=");
                 var name = decodeURIComponent(pair[0]);
                 var paramString = decodeURIComponent(pair[1]);
-                callback(name, paramString);
-            });
+                var param = this._findParam(name);
+                if (param) {
+                    callback(name, paramString, param);
+                }
+            }, this);
             return result;
         },
         _getEmptyValues: function() {
@@ -86,10 +89,9 @@
             return "#" + segments.join(";");
         },
         setHash: function(hash) {
-            var self = this;
             var values = this._getEmptyValues();
-            this._forEachHashString(hash, function(name, paramString) {
-                self._mergeHashString(values, name, paramString);
+            this._forEachHashString(hash, function(name, paramString, param) {
+                values[name] = paramString;
             });
             this.values = values;
         },
