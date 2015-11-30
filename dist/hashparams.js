@@ -73,12 +73,6 @@
                 values[name] = hashString;
             }
         },
-        _mergeHashStrings: function(values, hashStrings) {
-            for (var name in hashStrings) {
-                this._mergeHashString(values, name, hashStrings[name]);
-            }
-            return values;
-        },
         getHash: function() {
             var segments = [];
             this.params.forEach(function(param) {
@@ -90,8 +84,12 @@
             return "#" + segments.join(";");
         },
         setHash: function(hash) {
+            var values = this._getEmptyValues();
             var hashStrings = this._hashToStrings(hash);
-            this.values = this._mergeHashStrings(this._getEmptyValues(), hashStrings);
+            for (var name in hashStrings) {
+                this._mergeHashString(values, name, hashStrings[name]);
+            }
+            this.values = values;
         },
         with: function(name, value) {
             var newParams = new HashParams(this.params);
