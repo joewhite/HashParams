@@ -43,6 +43,14 @@
             // we also encode ',', ';', and '=' since we give them special meaning.
             return string.replace(/[^-!$&'()*+./0-9:?@A-Z_a-z~]/g, encodeURIComponent);
         },
+        _findParam: function(name) {
+            for (var i = 0; i < this.params.length; ++i) {
+                var param = this.params[i];
+                if (param.name === name) {
+                    return param;
+                }
+            }
+        },
         _getEmptyValues: function() {
             var values = {};
             this.params.forEach(function(param) {
@@ -60,11 +68,12 @@
             return result;
         },
         _mergeHashStrings: function(values, hashStrings) {
-            this.params.forEach(function(param) {
-                if (param.name in hashStrings) {
-                    values[param.name] = hashStrings[param.name];
+            for (var name in hashStrings) {
+                var param = this._findParam(name);
+                if (param) {
+                    values[name] = hashStrings[name];
                 }
-            });
+            }
             return values;
         },
         getHash: function() {
