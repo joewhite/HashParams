@@ -56,7 +56,9 @@
             var result = {};
             hashData.split(";").forEach(function(arg) {
                 var pair = arg.split("=");
-                callback(decodeURIComponent(pair[0]), decodeURIComponent(pair[1]));
+                var name = decodeURIComponent(pair[0]);
+                var paramString = decodeURIComponent(pair[1]);
+                callback(name, paramString);
             });
             return result;
         },
