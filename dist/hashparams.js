@@ -72,12 +72,6 @@
             });
             return values;
         },
-        _mergeHashString: function(values, name, hashString) {
-            var param = this._findParam(name);
-            if (param) {
-                values[name] = hashString;
-            }
-        },
         getHash: function() {
             var segments = [];
             this.params.forEach(function(param) {
@@ -98,7 +92,10 @@
         with: function(name, value) {
             var newParams = new HashParams(this.params);
             var newValues = this._cloneValues();
-            this._mergeHashString(newValues, name, value);
+            var param = this._findParam(name);
+            if (param) {
+                newValues[name] = value;
+            }
             newParams.values = newValues;
             return newParams;
         }
