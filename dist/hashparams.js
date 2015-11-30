@@ -51,21 +51,21 @@
                 }
             }
         },
+        _forEachHashString: function(hash, callback) {
+            var hashData = (hash || "").replace(/^#/, "");
+            var result = {};
+            hashData.split(";").forEach(function(arg) {
+                var pair = arg.split("=");
+                callback(decodeURIComponent(pair[0]), decodeURIComponent(pair[1]));
+            });
+            return result;
+        },
         _getEmptyValues: function() {
             var values = {};
             this.params.forEach(function(param) {
                 values[param.name] = param.getEmptyValue();
             });
             return values;
-        },
-        _hashToStrings: function(hash) {
-            var hashData = (hash || "").replace(/^#/, "");
-            var result = {};
-            hashData.split(";").forEach(function(arg) {
-                var pair = arg.split("=");
-                result[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
-            });
-            return result;
         },
         _mergeHashString: function(values, name, hashString) {
             var param = this._findParam(name);
@@ -84,11 +84,11 @@
             return "#" + segments.join(";");
         },
         setHash: function(hash) {
+            var self = this;
             var values = this._getEmptyValues();
-            var hashStrings = this._hashToStrings(hash);
-            for (var name in hashStrings) {
-                this._mergeHashString(values, name, hashStrings[name]);
-            }
+            this._forEachHashString(hash, function(name, paramString) {
+                self._mergeHashString(values, name, paramString);
+            });
             this.values = values;
         },
         with: function(name, value) {
