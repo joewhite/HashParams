@@ -95,9 +95,9 @@
         },
         with: function(name, value) {
             var newParams = new HashParams(this.params);
-            var newStrings = {};
-            newStrings[name] = value;
-            newParams.values = this._mergeHashStrings(this._cloneValues(), newStrings);
+            var newValues = this._cloneValues();
+            this._mergeHashString(newValues, name, value);
+            newParams.values = newValues;
             return newParams;
         }
     };
