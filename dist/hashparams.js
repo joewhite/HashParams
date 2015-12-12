@@ -37,7 +37,7 @@
         _getEmptyValues: function() {
             var values = {};
             this.params.forEach(function(param) {
-                values[param.name] = "";
+                values[param.name] = param.getEmptyValue();
             });
             return values;
         },
@@ -80,10 +80,24 @@
             return newParams;
         }
     };
+
+    function scalar(name) {
+        this.name = name;
+    }
+    scalar.prototype = {
+        getEmptyValue: function() { return ""; }
+    };
+
+    function set(name) {
+        this.name = name;
+    }
+    set.prototype = {
+        getEmptyValue: function() { return new Set(); }
+    };
+
     HashParams.types = {
-        scalar: function(name) {
-            this.name = name;
-        }
+        scalar: scalar,
+        set: set
     };
     window.HashParams = HashParams;
 })(this);

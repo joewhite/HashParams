@@ -34,7 +34,7 @@ describe 'HashParams', ->
             it 'has no values', ->
                 expect(params.values).toEqual {}
         describe 'foreground and background as', ->
-            describe 'scalars', ->
+            describe 'types.scalar', ->
                 params = null
                 beforeEach ->
                     params = new HashParams(
@@ -42,13 +42,13 @@ describe 'HashParams', ->
                         new HashParams.types.scalar('background'))
                 it 'has empty strings for values.foreground and values.background', ->
                     expect(params.values).toEqual {foreground: '', background: ''}
-            describe 'strings', ->
+            describe 'string shorthand', ->
                 params = null
                 beforeEach ->
                     params = new HashParams('foreground', 'background')
                 it 'has empty strings for values.foreground and values.background', ->
                     expect(params.values).toEqual {foreground: '', background: ''}
-            describe 'array of scalars', ->
+            describe 'array of types.scalar', ->
                 params = null
                 beforeEach ->
                     params = new HashParams([
@@ -57,6 +57,17 @@ describe 'HashParams', ->
                     ])
                 it 'has empty strings for values.foreground and values.background', ->
                     expect(params.values).toEqual {foreground: '', background: ''}
+        describe 'tags and authors as', ->
+            describe 'types.set', ->
+                params = null
+                beforeEach ->
+                    params = new HashParams(
+                        new HashParams.types.set('tags'),
+                        new HashParams.types.set('authors'))
+                it 'has empty sets for values.tags and values.authors', ->
+                    expect(params.values).toEqual {tags: setOf(), authors: setOf()}
+                it 'has separate instances for values.tags and values.authors', ->
+                    expect(params.values.tags).not.toBe(params.values.authors)
         describe 'invalid value', ->
             expectInvalidParameter = (value) ->
                 expect(-> new HashParams(value)).toThrowError /Invalid parameter definition/
