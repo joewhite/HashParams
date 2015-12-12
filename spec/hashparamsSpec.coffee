@@ -1,3 +1,30 @@
+#region Set helpers
+setOf = (values...) ->
+    result = new Set
+    values.forEach (value) -> result.add value
+    result
+Set.prototype.jasmineToString = ->
+    # CoffeeScript list comprehensions don't work on Set because it has
+    # a .size property, not .length. Manually arrayify.
+    values = []
+    @forEach (value) -> values.push value
+    "Set{#{values.join(', ')}}"
+beforeEach ->
+    jasmine.addCustomEqualityTester (a, b) ->
+        if (a instanceof Set && b instanceof Set)
+            if (a.size == b.size)
+                clone = new Set
+                a.forEach (value) -> clone.add value
+                b.forEach (value) -> clone.delete value
+                clone.size == 0
+            else false # suppress Jasmine's default "all Set instances are equal" behavior
+#endregion
+
+describe 'Set comparison', ->
+    it 'works', ->
+        s = setOf 5, 4
+        expect(s).toEqual setOf 4, 5
+
 describe 'HashParams', ->
     describe 'when constructed with', ->
         describe 'nothing', ->
