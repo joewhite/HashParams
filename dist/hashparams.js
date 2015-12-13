@@ -81,23 +81,31 @@
         }
     };
 
-    function scalar(name) {
-        this.name = name;
-    }
-    scalar.prototype = {
+    HashParams.types = {};
+    HashParams.defineType = function(properties) {
+        var requiredProperties = "name getEmptyValue";
+        requiredProperties.split(" ").forEach(function(requiredProperty) {
+            if (!(requiredProperty in properties)) {
+                throw new Error("Call to defineType is missing required property " + requiredProperty);
+            }
+        });
+
+        function paramType(name) {
+            this.name = name;
+        }
+        paramType.prototype = {
+            getEmptyValue: properties.getEmptyValue
+        };
+        HashParams.types[properties.name] = paramType;
+    };
+    HashParams.defineType({
+        name: "scalar",
         getEmptyValue: function() { return ""; }
-    };
-
-    function set(name) {
-        this.name = name;
-    }
-    set.prototype = {
+    });
+    HashParams.defineType({
+        name: "set",
         getEmptyValue: function() { return new Set(); }
-    };
+    });
 
-    HashParams.types = {
-        scalar: scalar,
-        set: set
-    };
     window.HashParams = HashParams;
 })(this);
