@@ -54,15 +54,6 @@ describe 'HashParams', ->
                     params = new HashParams('foreground:scalar', 'background:scalar')
                 it 'has empty strings for values.foreground and values.background', ->
                     expect(params.values).toEqual {foreground: '', background: ''}
-            describe 'array of types.scalar', ->
-                params = null
-                beforeEach ->
-                    params = new HashParams([
-                        new HashParams.types.scalar('foreground'),
-                        new HashParams.types.scalar('background')
-                    ])
-                it 'has empty strings for values.foreground and values.background', ->
-                    expect(params.values).toEqual {foreground: '', background: ''}
         describe 'tags and authors as', ->
             describe 'types.set', ->
                 params = null
@@ -80,6 +71,15 @@ describe 'HashParams', ->
                     params = new HashParams('tags:set', 'authors:set')
                 it 'has empty sets for values.tags and values.authors', ->
                     expect(params.values).toEqual {tags: setOf(), authors: setOf()}
+        describe 'array of type objects', ->
+            params = null
+            beforeEach ->
+                params = new HashParams([
+                    new HashParams.types.scalar('foreground'),
+                    new HashParams.types.set('tags')
+                ])
+            it 'has empty string for values.foreground and empty set for values.tags', ->
+                expect(params.values).toEqual {foreground: '', tags: setOf()}
         describe 'invalid value', ->
             expectInvalidParameter = (value) ->
                 expect(-> new HashParams(value)).toThrowError /Invalid parameter definition/
