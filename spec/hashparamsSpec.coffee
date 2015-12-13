@@ -74,21 +74,20 @@ describe 'HashParams', ->
             it 'invalid type', -> expect(-> new HashParams('value:dszquphsbnt')).toThrowError /Invalid parameter type/
     describe '.setHash()', ->
         params = null
+        hashYieldsValues = (hash, expected) ->
+            params.setHash hash
+            expect(params.values).toEqual expected
+        emptyCases = {
+            'just a hash character': '#',
+            'an empty string': '',
+            'undefined': undefined,
+            'null': null
+        }
         describe 'with scalars "foreground" and "background"', ->
-            beforeEach ->
-                params = new HashParams('foreground', 'background')
-            hashYieldsValues = (hash, expected) ->
-                params.setHash hash
-                expect(params.values).toEqual expected
+            beforeEach -> params = new HashParams('foreground', 'background')
             describe 'resets to empty when passed', ->
                 beforeEach -> params.values = {foreground: 'blue', background: 'green'}
-                cases = {
-                    'just a hash character': '#',
-                    'an empty string': '',
-                    'undefined': undefined,
-                    'null': null
-                }
-                for name, hash of cases
+                for name, hash of emptyCases
                     do (name, hash) ->
                         it name, -> hashYieldsValues hash, {foreground: '', background: ''}
             it 'can set values.foreground', ->
@@ -102,6 +101,13 @@ describe 'HashParams', ->
                 hashYieldsValues '#foreground=blue;background=green', {foreground: 'blue', background: 'green'}
             it 'will not set values.foo', ->
                 hashYieldsValues '#foo=bar', {foreground: '', background: ''}
+        describe 'with sets "tags" and "authors"', ->
+            beforeEach -> params = new HashParams('tags:set', 'authors:set')
+            describe 'resets to empty when passed', ->
+                beforeEach -> params.values = {tags: setOf('A'), authors: setOf('Bob')}
+                for name, hash of emptyCases
+                    do (name, hash) ->
+                        it name, -> hashYieldsValues hash, {tags: setOf(), authors: setOf()}
         describe 'unencoding', ->
             decodes = (encoded, decoded) ->
                 params = new HashParams('name' + decoded)
