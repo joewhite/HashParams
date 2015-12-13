@@ -42,10 +42,16 @@ describe 'HashParams', ->
                         new HashParams.types.scalar('background'))
                 it 'has empty strings for values.foreground and values.background', ->
                     expect(params.values).toEqual {foreground: '', background: ''}
-            describe 'string shorthand', ->
+            describe 'name shorthand', ->
                 params = null
                 beforeEach ->
                     params = new HashParams('foreground', 'background')
+                it 'has empty strings for values.foreground and values.background', ->
+                    expect(params.values).toEqual {foreground: '', background: ''}
+            describe 'string shorthand', ->
+                params = null
+                beforeEach ->
+                    params = new HashParams('foreground:scalar', 'background:scalar')
                 it 'has empty strings for values.foreground and values.background', ->
                     expect(params.values).toEqual {foreground: '', background: ''}
             describe 'array of types.scalar', ->
@@ -68,12 +74,22 @@ describe 'HashParams', ->
                     expect(params.values).toEqual {tags: setOf(), authors: setOf()}
                 it 'has separate instances for values.tags and values.authors', ->
                     expect(params.values.tags).not.toBe(params.values.authors)
+            describe 'string shorthand', ->
+                params = null
+                beforeEach ->
+                    params = new HashParams('tags:set', 'authors:set')
+                it 'has empty sets for values.tags and values.authors', ->
+                    expect(params.values).toEqual {tags: setOf(), authors: setOf()}
         describe 'invalid value', ->
             expectInvalidParameter = (value) ->
                 expect(-> new HashParams(value)).toThrowError /Invalid parameter definition/
             it 'undefined', -> expectInvalidParameter undefined
             it 'null', -> expectInvalidParameter null
             it 'empty object', -> expectInvalidParameter {}
+            it 'empty string', ->
+                expect(-> new HashParams('')).toThrowError /Invalid parameter name/
+            it 'invalid type', ->
+                expect(-> new HashParams('value:dszquphsbnt')).toThrowError /Invalid parameter type/
     describe '.setHash()', ->
         describe 'when constructed with foreground and background', ->
             params = null
@@ -162,7 +178,8 @@ describe 'HashParams', ->
                 expect(params.getHash()).toBe "#foreground=blue"
         describe 'encoding', ->
             encodes = (decoded, encoded) ->
-                params = new HashParams('name' + decoded)
+                # Use HashParams.types.scalar constructor since it allows ':' in name
+                params = new HashParams(new HashParams.types.scalar('name' + decoded))
                 params.values['name' + decoded] = 'value' + decoded
                 expect(params.getHash()).toBe '#name' + encoded + '=value' + encoded
             accepts = (char) -> encodes char, char
