@@ -108,6 +108,22 @@ describe 'HashParams', ->
                 for name, hash of emptyCases
                     do (name, hash) ->
                         it name, -> hashYieldsValues hash, {tags: setOf(), authors: setOf()}
+            xit 'can set values.tags to an empty Set', ->
+                hashYieldsValues '#tags=', {tags: setOf(), authors: setOf()}
+            xit 'can set values.tags to a single value', ->
+                hashYieldsValues '#tags=A', {tags: setOf('A'), authors: setOf()}
+            xit 'can set values.tags to a multiple values', ->
+                hashYieldsValues '#tags=A,B,C', {tags: setOf('A', 'B', 'C'), authors: setOf()}
+            xit 'clears other values', ->
+                params.values.tags = setOf('A', 'B', 'C')
+                hashYieldsValues '#authors=Bob', {tags: setOf(), authors: setOf('Bob')}
+            xit 'can set both values', ->
+                hashYieldsValues '#tags=A,B,C;authors=Bob,Ned',
+                    {tags: setOf('A', 'B', 'C'), authors: setOf('Bob', 'Ned')}
+            xit 'can take values with encoded commas', ->
+                hashYieldsValues '#tags=A%2CB,C%2CD', {tags: setOf('A,B', 'C,d'), authors: setOf()}
+            it 'will not set values.foo', ->
+                hashYieldsValues '#foo=bar', {tags: setOf(), authors: setOf()}
         describe 'unencoding', ->
             decodes = (encoded, decoded) ->
                 params = new HashParams('name' + decoded)
