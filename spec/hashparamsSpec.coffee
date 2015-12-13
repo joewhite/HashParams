@@ -26,70 +26,51 @@ describe 'Set comparison', ->
         expect(s).toEqual setOf 4, 5
 
 describe 'HashParams', ->
-    describe 'when constructed with', ->
+    describe 'happy-path construction with', ->
+        describeConstructor = (cases, body) ->
+            for name, args of cases
+                createParams = -> new HashParams args...
+                describe name, -> body(createParams)
+        describe 'scalars "foreground" and "background" as', ->
+            describeConstructor {
+                'names': ['foreground', 'background'],
+                'names and types': ['foreground:scalar', 'background:scalar'],
+                'type objects': [new HashParams.types.scalar('foreground'), new HashParams.types.scalar('background')]
+            }, (createParams) ->
+                it 'has empty strings for values.foreground and values.background', ->
+                    expect(createParams().values).toEqual {foreground: '', background: ''}
+        describe 'sets "tags" and "authors" as', ->
+            describeConstructor {
+                'names and types': ['tags:set', 'authors:set'],
+                'type objects': [new HashParams.types.set('tags'), new HashParams.types.set('authors')]
+            }, (createParams) ->
+                it 'has empty sets for values.tags and values.authors', ->
+                    expect(createParams().values).toEqual {tags: setOf(), authors: setOf()}
+                it 'has separate instances for values.tags and values.authors', ->
+                    params = createParams()
+                    expect(params.values.tags).not.toBe(params.values.authors)
+        describe 'array of type objects', ->
+            it 'has empty values', ->
+                params = new HashParams([
+                    new HashParams.types.scalar('foreground'),
+                    new HashParams.types.set('tags')
+                ])
+                expect(params.values).toEqual {foreground: '', tags: setOf()}
+    describe 'special-case construction with', ->
         describe 'nothing', ->
             params = null
             beforeEach ->
                 params = new HashParams()
             it 'has no values', ->
                 expect(params.values).toEqual {}
-        describe 'foreground and background as', ->
-            describe 'types.scalar', ->
-                params = null
-                beforeEach ->
-                    params = new HashParams(
-                        new HashParams.types.scalar('foreground'),
-                        new HashParams.types.scalar('background'))
-                it 'has empty strings for values.foreground and values.background', ->
-                    expect(params.values).toEqual {foreground: '', background: ''}
-            describe 'name shorthand', ->
-                params = null
-                beforeEach ->
-                    params = new HashParams('foreground', 'background')
-                it 'has empty strings for values.foreground and values.background', ->
-                    expect(params.values).toEqual {foreground: '', background: ''}
-            describe 'string shorthand', ->
-                params = null
-                beforeEach ->
-                    params = new HashParams('foreground:scalar', 'background:scalar')
-                it 'has empty strings for values.foreground and values.background', ->
-                    expect(params.values).toEqual {foreground: '', background: ''}
-        describe 'tags and authors as', ->
-            describe 'types.set', ->
-                params = null
-                beforeEach ->
-                    params = new HashParams(
-                        new HashParams.types.set('tags'),
-                        new HashParams.types.set('authors'))
-                it 'has empty sets for values.tags and values.authors', ->
-                    expect(params.values).toEqual {tags: setOf(), authors: setOf()}
-                it 'has separate instances for values.tags and values.authors', ->
-                    expect(params.values.tags).not.toBe(params.values.authors)
-            describe 'string shorthand', ->
-                params = null
-                beforeEach ->
-                    params = new HashParams('tags:set', 'authors:set')
-                it 'has empty sets for values.tags and values.authors', ->
-                    expect(params.values).toEqual {tags: setOf(), authors: setOf()}
-        describe 'array of type objects', ->
-            params = null
-            beforeEach ->
-                params = new HashParams([
-                    new HashParams.types.scalar('foreground'),
-                    new HashParams.types.set('tags')
-                ])
-            it 'has empty string for values.foreground and empty set for values.tags', ->
-                expect(params.values).toEqual {foreground: '', tags: setOf()}
         describe 'invalid value', ->
             expectInvalidParameter = (value) ->
                 expect(-> new HashParams(value)).toThrowError /Invalid parameter definition/
             it 'undefined', -> expectInvalidParameter undefined
             it 'null', -> expectInvalidParameter null
             it 'empty object', -> expectInvalidParameter {}
-            it 'empty string', ->
-                expect(-> new HashParams('')).toThrowError /Invalid parameter name/
-            it 'invalid type', ->
-                expect(-> new HashParams('value:dszquphsbnt')).toThrowError /Invalid parameter type/
+            it 'empty string', -> expect(-> new HashParams('')).toThrowError /Invalid parameter name/
+            it 'invalid type', -> expect(-> new HashParams('value:dszquphsbnt')).toThrowError /Invalid parameter type/
     describe '.setHash()', ->
         describe 'when constructed with foreground and background', ->
             params = null
