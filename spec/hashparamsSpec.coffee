@@ -29,8 +29,9 @@ describe 'HashParams', ->
     describe 'happy-path construction with', ->
         describeConstructor = (cases, body) ->
             for name, args of cases
-                createParams = -> new HashParams args...
-                describe name, -> body(createParams)
+                do (name, args) ->
+                    createParams = -> new HashParams args...
+                    describe name, -> body(createParams)
         describe 'scalars "foreground" and "background" as', ->
             describeConstructor {
                 'names': ['foreground', 'background'],
@@ -72,40 +73,35 @@ describe 'HashParams', ->
             it 'empty string', -> expect(-> new HashParams('')).toThrowError /Invalid parameter name/
             it 'invalid type', -> expect(-> new HashParams('value:dszquphsbnt')).toThrowError /Invalid parameter type/
     describe '.setHash()', ->
-        describe 'when constructed with foreground and background', ->
-            params = null
+        params = null
+        describe 'with scalars "foreground" and "background"', ->
             beforeEach ->
                 params = new HashParams('foreground', 'background')
-            describe 'resets to empty', ->
+            hashYieldsValues = (hash, expected) ->
+                params.setHash hash
+                expect(params.values).toEqual expected
+            describe 'resets to empty when passed', ->
                 beforeEach -> params.values = {foreground: 'blue', background: 'green'}
-                it 'when passed just a hash character', ->
-                    params.setHash '#'
-                    expect(params.values).toEqual {foreground: '', background: ''}
-                it 'when passed an empty string', ->
-                    params.setHash ''
-                    expect(params.values).toEqual {foreground: '', background: ''}
-                it 'when passed undefined', ->
-                    params.setHash undefined
-                    expect(params.values).toEqual {foreground: '', background: ''}
-                it 'when passed null', ->
-                    params.setHash null
-                    expect(params.values).toEqual {foreground: '', background: ''}
+                cases = {
+                    'just a hash character': '#',
+                    'an empty string': '',
+                    'undefined': undefined,
+                    'null': null
+                }
+                for name, hash of cases
+                    do (name, hash) ->
+                        it name, -> hashYieldsValues hash, {foreground: '', background: ''}
             it 'can set values.foreground', ->
-                params.setHash '#foreground=blue'
-                expect(params.values).toEqual {foreground: 'blue', background: ''}
+                hashYieldsValues '#foreground=blue', {foreground: 'blue', background: ''}
             it 'can set values.background', ->
-                params.setHash '#background=green'
-                expect(params.values).toEqual {foreground: '', background: 'green'}
+                hashYieldsValues '#background=green', {foreground: '', background: 'green'}
             it 'clears other values', ->
                 params.values.foreground = 'magenta'
-                params.setHash '#background=green'
-                expect(params.values).toEqual {foreground: '', background: 'green'}
+                hashYieldsValues '#background=green', {foreground: '', background: 'green'}
             it 'can set both foreground and background', ->
-                params.setHash '#foreground=blue;background=green'
-                expect(params.values).toEqual {foreground: 'blue', background: 'green'}
+                hashYieldsValues '#foreground=blue;background=green', {foreground: 'blue', background: 'green'}
             it 'will not set values.foo', ->
-                params.setHash '#foo=bar'
-                expect(params.values).toEqual {foreground: '', background: ''}
+                hashYieldsValues '#foo=bar', {foreground: '', background: ''}
         describe 'unencoding', ->
             decodes = (encoded, decoded) ->
                 params = new HashParams('name' + decoded)
