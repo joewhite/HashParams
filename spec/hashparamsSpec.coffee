@@ -155,7 +155,7 @@ describe 'HashParams', ->
             it 'decodes ,', -> decodes '%2C', ','
             it 'decodes ;', -> decodes '%3B', ';'
     describe '.with()', ->
-        describe 'starting with foreground=blue and background=green', ->
+        describe 'starting with strings foreground=blue and background=green', ->
             params = null
             beforeEach ->
                 params = new HashParams('foreground', 'background')
@@ -170,6 +170,25 @@ describe 'HashParams', ->
             it 'will not set values.foo', ->
                 newParams = params.with('foo', 'bar')
                 expect(newParams.values).toEqual {foreground: 'blue', background: 'green'}
+        describe 'starting with sets tags={a,b} and authors={Bob,Ned}', ->
+            params = null
+            beforeEach ->
+                params = new HashParams('tags:set', 'authors:set')
+                params.values.tags = setOf('a', 'b')
+                params.values.authors = setOf('Bob', 'Ned')
+            describe 'passing set value', ->
+                it 'can set tags={c,d}', ->
+                    newParams = params.with('tags', setOf('c', 'd'))
+                    expect(newParams.values).toEqual {tags: setOf('c', 'd'), authors: setOf('Bob', 'Ned')}
+                it 'does not modify original', ->
+                    params.with('tags', setOf('c', 'd'))
+                    expect(params.values).toEqual {tags: setOf('a', 'b'), authors: setOf('Bob', 'Ned')}
+                xit 'clones other values', ->
+                    newParams = params.with('tags', setOf('c', 'd'))
+                    expect(params.values.authors).not.toBe(newParams.values.authors)
+                it 'will not set values.foo', ->
+                    newParams = params.with('foo', 'bar')
+                    expect(newParams.values).toEqual {tags: setOf('a', 'b'), authors: setOf('Bob', 'Ned')}
     describe '.getHash()', ->
         describe 'when constructed with foreground and background', ->
             params = null
