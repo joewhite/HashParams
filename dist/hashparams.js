@@ -101,12 +101,12 @@
             newParams.values = newValues;
             return newParams;
         },
-        without: function(name) {
+        without: function(name, value) {
             var newParams = new HashParams(this.params);
             var newValues = this._cloneValues();
             var param = this._findParam(name);
             if (param) {
-                newValues[name] = param.resolveWithout();
+                newValues[name] = param.resolveWithout(newValues[name], value);
             }
             newParams.values = newValues;
             return newParams;
@@ -191,7 +191,11 @@
             }
             throw new Error("HashParams: Invalid parameter type passed to 'with': " + newValue);
         },
-        resolveWithout: function() {
+        resolveWithout: function(oldValue, newValue) {
+            if (typeof newValue === "string") {
+                oldValue.delete(newValue);
+                return oldValue;
+            }
             return new Set();
         }
     });

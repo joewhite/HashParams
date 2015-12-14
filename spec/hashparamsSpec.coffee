@@ -257,6 +257,12 @@ describe 'HashParams', ->
             it 'will not add foo', ->
                 newParams = params.without 'foo'
                 expect(newParams.values).toEqual {tags: setOf('a', 'b'), authors: setOf('Bob', 'Ned')}
+            it 'can remove "a" from tags', ->
+                newParams = params.without 'tags', 'a'
+                expect(newParams.values).toEqual {tags: setOf('b'), authors: setOf('Bob', 'Ned')}
+            it 'does nothing if requested value is not present', ->
+                newParams = params.without 'tags', 'z'
+                expect(newParams.values).toEqual {tags: setOf('a', 'b'), authors: setOf('Bob', 'Ned')}
     describe '.getHash()', ->
         describe 'when constructed with foreground and background', ->
             params = null
