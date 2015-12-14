@@ -154,18 +154,27 @@
             var result = new Set();
             if (hashString !== "") {
                 hashString.split(",").forEach(function(value) {
-                    result.add(decodeURIComponent(value));
+                    if (value) {
+                        result.add(decodeURIComponent(value));
+                    }
                 });
             }
             return result;
         },
         resolveWith: function(oldValue, newValue) {
-            if (!(newValue instanceof Set)) {
-                throw new Error("HashParams: Invalid parameter type passed to 'with': " + newValue);
+            if (newValue === "" || newValue == null) {
+                return oldValue;
             }
-            var result = new Set();
-            newValue.forEach(function(value) { result.add(value); });
-            return result;
+            if (typeof newValue === "string") {
+                oldValue.add(newValue);
+                return oldValue;
+            }
+            if (newValue instanceof Set) {
+                var result = new Set();
+                newValue.forEach(function(value) { result.add(value); });
+                return result;
+            }
+            throw new Error("HashParams: Invalid parameter type passed to 'with': " + newValue);
         }
     });
 

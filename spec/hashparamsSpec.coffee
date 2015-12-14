@@ -114,6 +114,8 @@ describe 'HashParams', ->
                 hashYieldsValues '#tags=A', {tags: setOf('A'), authors: setOf()}
             it 'can set values.tags to a multiple values', ->
                 hashYieldsValues '#tags=A,B,C', {tags: setOf('A', 'B', 'C'), authors: setOf()}
+            it 'ignores empty values', ->
+                hashYieldsValues '#tags=,A,,B,', {tags: setOf('A', 'B'), authors: setOf()}
             it 'clears other values', ->
                 params.values.tags = setOf('A', 'B', 'C')
                 hashYieldsValues '#authors=Bob', {tags: setOf(), authors: setOf('Bob')}
@@ -207,6 +209,22 @@ describe 'HashParams', ->
                 it 'will not set values.foo', ->
                     newParams = params.with('foo', 'bar')
                     expect(newParams.values).toEqual {tags: setOf('a', 'b'), authors: setOf('Bob', 'Ned')}
+            describe 'passing string value', ->
+                it 'can add non-empty string', ->
+                    newParams = params.with('tags', 'c')
+                    expect(newParams.values).toEqual {tags: setOf('a', 'b', 'c'), authors: setOf('Bob', 'Ned')}
+                it 'will not add duplicates', ->
+                    newParams = params.with('tags', 'a')
+                    expect(newParams.values).toEqual {tags: setOf('a', 'b'), authors: setOf('Bob', 'Ned')}
+                it 'ignores empty string', ->
+                    newParams = params.with('tags', '')
+                    expect(newParams.values).toEqual {tags: setOf('a', 'b'), authors: setOf('Bob', 'Ned')}
+            it 'ignores null', ->
+                newParams = params.with('tags', null)
+                expect(newParams.values).toEqual {tags: setOf('a', 'b'), authors: setOf('Bob', 'Ned')}
+            it 'ignores undefined', ->
+                newParams = params.with('tags', undefined)
+                expect(newParams.values).toEqual {tags: setOf('a', 'b'), authors: setOf('Bob', 'Ned')}
             describe 'throws when passing invalid type', ->
                 expectInvalidType = (value) ->
                     expect(-> params.with('tags', value)).toThrowError /Invalid parameter type/
