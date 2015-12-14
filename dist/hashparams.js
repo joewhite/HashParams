@@ -130,7 +130,9 @@
         hashStringToValue: function(hashString) {
             // IE 11 doesn't support passing an array to new Set(), so do this the hard way
             var result = new Set();
-            hashString.split(",").forEach(function(value) { result.add(value); });
+            if (hashString !== "") {
+                hashString.split(",").forEach(function(value) { result.add(value); });
+            }
             return result;
         }
     });

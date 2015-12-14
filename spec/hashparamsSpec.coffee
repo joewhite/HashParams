@@ -108,7 +108,7 @@ describe 'HashParams', ->
                 for name, hash of emptyCases
                     do (name, hash) ->
                         it name, -> hashYieldsValues hash, {tags: setOf(), authors: setOf()}
-            xit 'can set values.tags to an empty Set', ->
+            it 'can set values.tags to an empty Set', ->
                 hashYieldsValues '#tags=', {tags: setOf(), authors: setOf()}
             it 'can set values.tags to a single value', ->
                 hashYieldsValues '#tags=A', {tags: setOf('A'), authors: setOf()}
