@@ -100,6 +100,16 @@
             }
             newParams.values = newValues;
             return newParams;
+        },
+        without: function(name) {
+            var newParams = new HashParams(this.params);
+            var newValues = this._cloneValues();
+            var param = this._findParam(name);
+            if (param) {
+                newValues[name] = param.resolveWithout();
+            }
+            newParams.values = newValues;
+            return newParams;
         }
     };
 
@@ -110,7 +120,8 @@
             "cloneValue",
             "getEmptyValue",
             "rawHashStringToValue",
-            "resolveWith"
+            "resolveWith",
+            "resolveWithout"
         ];
         requiredProperties.forEach(function(requiredProperty) {
             if (!(requiredProperty in properties)) {
@@ -125,7 +136,8 @@
             cloneValue: properties.cloneValue,
             getEmptyValue: properties.getEmptyValue,
             rawHashStringToValue: properties.rawHashStringToValue,
-            resolveWith: properties.resolveWith
+            resolveWith: properties.resolveWith,
+            resolveWithout: properties.resolveWithout
         };
         HashParams.types[properties.name] = paramType;
     };
@@ -139,6 +151,9 @@
                 throw new Error("HashParams: Invalid parameter type passed to 'with': " + newValue);
             }
             return newValue || "";
+        },
+        resolveWithout: function() {
+            return "";
         }
     });
     HashParams.defineType({
@@ -175,6 +190,9 @@
                 return result;
             }
             throw new Error("HashParams: Invalid parameter type passed to 'with': " + newValue);
+        },
+        resolveWithout: function() {
+            return new Set();
         }
     });
 

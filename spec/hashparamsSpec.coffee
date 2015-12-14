@@ -232,6 +232,31 @@ describe 'HashParams', ->
                 it 'number', -> expectInvalidType 0
                 it 'array', -> expectInvalidType []
                 it 'object', -> expectInvalidType {}
+    describe '.without()', ->
+        describe 'starting with strings foreground=blue and background=green', ->
+            params = null
+            beforeEach ->
+                params = new HashParams('foreground', 'background')
+                params.values.foreground = 'blue'
+                params.values.background = 'green'
+            it 'can remove foreground', ->
+                newParams = params.without 'foreground'
+                expect(newParams.values).toEqual {foreground: '', background: 'green'}
+            it 'will not add foo', ->
+                newParams = params.without 'foo'
+                expect(newParams.values).toEqual {foreground: 'blue', background: 'green'}
+        describe 'starting with sets tags={a,b} and authors={Bob,Ned}', ->
+            params = null
+            beforeEach ->
+                params = new HashParams('tags:set', 'authors:set')
+                params.values.tags = setOf('a', 'b')
+                params.values.authors = setOf('Bob', 'Ned')
+            it 'can remove tags', ->
+                newParams = params.without 'tags'
+                expect(newParams.values).toEqual {tags: setOf(), authors: setOf('Bob', 'Ned')}
+            it 'will not add foo', ->
+                newParams = params.without 'foo'
+                expect(newParams.values).toEqual {tags: setOf('a', 'b'), authors: setOf('Bob', 'Ned')}
     describe '.getHash()', ->
         describe 'when constructed with foreground and background', ->
             params = null
