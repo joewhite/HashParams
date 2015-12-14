@@ -85,7 +85,7 @@
         setHash: function(hash) {
             var values = this._getEmptyValues();
             this._forEachHashString(hash, function(name, paramString, param) {
-                values[name] = paramString;
+                values[name] = param.hashStringToValue(paramString);
             });
             this.values = values;
         },
@@ -103,7 +103,7 @@
 
     HashParams.types = {};
     HashParams.defineType = function(properties) {
-        var requiredProperties = "name getEmptyValue";
+        var requiredProperties = "name getEmptyValue hashStringToValue";
         requiredProperties.split(" ").forEach(function(requiredProperty) {
             if (!(requiredProperty in properties)) {
                 throw new Error("Call to defineType is missing required property " + requiredProperty);
@@ -114,17 +114,25 @@
             this.name = name;
         }
         paramType.prototype = {
-            getEmptyValue: properties.getEmptyValue
+            getEmptyValue: properties.getEmptyValue,
+            hashStringToValue: properties.hashStringToValue
         };
         HashParams.types[properties.name] = paramType;
     };
     HashParams.defineType({
         name: "scalar",
-        getEmptyValue: function() { return ""; }
+        getEmptyValue: function() { return ""; },
+        hashStringToValue: function(hashString) { return hashString; }
     });
     HashParams.defineType({
         name: "set",
-        getEmptyValue: function() { return new Set(); }
+        getEmptyValue: function() { return new Set(); },
+        hashStringToValue: function(hashString) {
+            // IE 11 doesn't support passing an array to new Set(), so do this the hard way
+            var result = new Set();
+            hashString.split(",").forEach(function(value) { result.add(value); });
+            return result;
+        }
     });
 
     window.HashParams = HashParams;

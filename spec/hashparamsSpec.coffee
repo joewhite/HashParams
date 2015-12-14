@@ -110,14 +110,14 @@ describe 'HashParams', ->
                         it name, -> hashYieldsValues hash, {tags: setOf(), authors: setOf()}
             xit 'can set values.tags to an empty Set', ->
                 hashYieldsValues '#tags=', {tags: setOf(), authors: setOf()}
-            xit 'can set values.tags to a single value', ->
+            it 'can set values.tags to a single value', ->
                 hashYieldsValues '#tags=A', {tags: setOf('A'), authors: setOf()}
-            xit 'can set values.tags to a multiple values', ->
+            it 'can set values.tags to a multiple values', ->
                 hashYieldsValues '#tags=A,B,C', {tags: setOf('A', 'B', 'C'), authors: setOf()}
-            xit 'clears other values', ->
+            it 'clears other values', ->
                 params.values.tags = setOf('A', 'B', 'C')
                 hashYieldsValues '#authors=Bob', {tags: setOf(), authors: setOf('Bob')}
-            xit 'can set both values', ->
+            it 'can set both values', ->
                 hashYieldsValues '#tags=A,B,C;authors=Bob,Ned',
                     {tags: setOf('A', 'B', 'C'), authors: setOf('Bob', 'Ned')}
             xit 'can take values with encoded commas', ->
