@@ -124,7 +124,7 @@ describe 'HashParams', ->
                 hashYieldsValues '#tags=A%2CB,C%2CD', {tags: setOf('A,B', 'C,D'), authors: setOf()}
             it 'will not set values.foo', ->
                 hashYieldsValues '#foo=bar', {tags: setOf(), authors: setOf()}
-        describe 'unencoding', ->
+        describe 'string parameter unencoding', ->
             decodes = (encoded, decoded) ->
                 params = new HashParams('name' + decoded)
                 params.setHash '#name' + encoded + '=value' + encoded
@@ -137,6 +137,23 @@ describe 'HashParams', ->
             it 'accepts !', -> accepts '!'
             it 'accepts $', -> accepts '$'
             it 'accepts &', -> accepts '&'
+            it 'accepts ,', -> accepts ','
+            it 'decodes ;', -> decodes '%3B', ';'
+        describe 'set parameter unencoding', ->
+            decodes = (encoded, decoded) ->
+                params = new HashParams('name' + decoded + ':set')
+                params.setHash '#name' + encoded + '=value1' + encoded + ',value2' + encoded
+                expected = {}
+                expected['name' + decoded] = setOf('value1' + decoded, 'value2' + decoded)
+                expect(params.values).toEqual expected
+            accepts = (char) -> decodes char, char
+            it 'decodes space', -> decodes '%20', ' '
+            it 'decodes =', -> decodes '%3D', '='
+            it 'accepts !', -> accepts '!'
+            it 'accepts $', -> accepts '$'
+            it 'accepts &', -> accepts '&'
+            it 'decodes ,', -> decodes '%2C', ','
+            it 'decodes ;', -> decodes '%3B', ';'
     describe '.with()', ->
         describe 'starting with foreground=blue and background=green', ->
             params = null
