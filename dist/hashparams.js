@@ -134,7 +134,12 @@
         cloneValue: function(value) { return value; },
         getEmptyValue: function() { return ""; },
         rawHashStringToValue: function(hashString) { return decodeURIComponent(hashString); },
-        resolveWith: function(oldValue, newValue) { return newValue; }
+        resolveWith: function(oldValue, newValue) {
+            if (newValue != null && typeof newValue !== "string") {
+                throw new Error("HashParams: Invalid parameter type passed to 'with': " + newValue);
+            }
+            return newValue || "";
+        }
     });
     HashParams.defineType({
         name: "set",
@@ -155,6 +160,9 @@
             return result;
         },
         resolveWith: function(oldValue, newValue) {
+            if (!(newValue instanceof Set)) {
+                throw new Error("HashParams: Invalid parameter type passed to 'with': " + newValue);
+            }
             var result = new Set();
             newValue.forEach(function(value) { result.add(value); });
             return result;

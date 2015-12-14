@@ -164,12 +164,26 @@ describe 'HashParams', ->
             it 'can set background=red', ->
                 newParams = params.with('background', 'red')
                 expect(newParams.values).toEqual {foreground: 'blue', background: 'red'}
+            it 'treats null as empty string', ->
+                newParams = params.with('background', null)
+                expect(newParams.values).toEqual {foreground: 'blue', background: ''}
+            it 'treats undefined as empty string', ->
+                newParams = params.with('background', undefined)
+                expect(newParams.values).toEqual {foreground: 'blue', background: ''}
             it 'does not modify original', ->
                 newParams = params.with('background', 'red')
                 expect(params.values).toEqual {foreground: 'blue', background: 'green'}
             it 'will not set values.foo', ->
                 newParams = params.with('foo', 'bar')
                 expect(newParams.values).toEqual {foreground: 'blue', background: 'green'}
+            describe 'throws when passing invalid type', ->
+                expectInvalidType = (value) ->
+                    expect(-> params.with('foreground', value)).toThrowError /Invalid parameter type/
+                it 'boolean', -> expectInvalidType false
+                it 'number', -> expectInvalidType 0
+                it 'array', -> expectInvalidType []
+                it 'object', -> expectInvalidType {}
+                it 'set', -> expectInvalidType setOf()
         describe 'starting with sets tags={a,b} and authors={Bob,Ned}', ->
             params = null
             beforeEach ->
@@ -193,6 +207,13 @@ describe 'HashParams', ->
                 it 'will not set values.foo', ->
                     newParams = params.with('foo', 'bar')
                     expect(newParams.values).toEqual {tags: setOf('a', 'b'), authors: setOf('Bob', 'Ned')}
+            describe 'throws when passing invalid type', ->
+                expectInvalidType = (value) ->
+                    expect(-> params.with('tags', value)).toThrowError /Invalid parameter type/
+                it 'boolean', -> expectInvalidType false
+                it 'number', -> expectInvalidType 0
+                it 'array', -> expectInvalidType []
+                it 'object', -> expectInvalidType {}
     describe '.getHash()', ->
         describe 'when constructed with foreground and background', ->
             params = null
