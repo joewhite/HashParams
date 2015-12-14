@@ -1,6 +1,11 @@
 /* export HashParams */
 (function(window) {
     "use strict";
+    function encode(string) {
+        // Based on RFC 3986 (see http://stackoverflow.com/a/2849800/87399), but
+        // we also encode ',', ';', and '=' since we give them special meaning.
+        return string.replace(/[^-!$&'()*+./0-9:?@A-Z_a-z~]/g, encodeURIComponent);
+    }
     function HashParams() {
         var params;
         if (Array.isArray(arguments[0])) {
@@ -40,11 +45,6 @@
             }, this);
             return newValues;
         },
-        _encode: function(string) {
-            // Based on RFC 3986 (see http://stackoverflow.com/a/2849800/87399), but
-            // we also encode ',', ';', and '=' since we give them special meaning.
-            return string.replace(/[^-!$&'()*+./0-9:?@A-Z_a-z~]/g, encodeURIComponent);
-        },
         _findParam: function(name) {
             for (var i = 0; i < this.params.length; ++i) {
                 var param = this.params[i];
@@ -77,8 +77,11 @@
         getHash: function() {
             var segments = [];
             this.params.forEach(function(param) {
-                if (this.values[param.name]) {
-                    var segment = this._encode(param.name) + "=" + this._encode(this.values[param.name]);
+                var rawValue = this.values[param.name];
+                var encodedValue = param.encodeValue(rawValue, encode);
+                if (encodedValue) {
+                    var encodedName = encode(param.name);
+                    var segment = encodedName + "=" + encodedValue;
                     segments.push(segment);
                 }
             }, this);
@@ -118,6 +121,7 @@
         var requiredProperties = [
             "name",
             "cloneValue",
+            "encodeValue",
             "getEmptyValue",
             "rawHashStringToValue",
             "resolveWith",
@@ -134,6 +138,7 @@
         }
         paramType.prototype = {
             cloneValue: properties.cloneValue,
+            encodeValue: properties.encodeValue,
             getEmptyValue: properties.getEmptyValue,
             rawHashStringToValue: properties.rawHashStringToValue,
             resolveWith: properties.resolveWith,
@@ -144,6 +149,7 @@
     HashParams.defineType({
         name: "scalar",
         cloneValue: function(value) { return value; },
+        encodeValue: function(value, encodeString) { return encodeString(value || ""); },
         getEmptyValue: function() { return ""; },
         rawHashStringToValue: function(hashString) { return decodeURIComponent(hashString); },
         resolveWith: function(oldValue, newValue) {
@@ -162,6 +168,25 @@
             var result = new Set();
             set.forEach(function(value) { result.add(value); });
             return result;
+        },
+        encodeValue: function(set, encodeString) {
+            var values = [];
+            if (set) {
+                set.forEach(function(value) {
+                    values.push(value);
+                });
+                values.sort(function(a, b) {
+                    var aLower = a.toLowerCase();
+                    var bLower = b.toLowerCase();
+                    if (aLower < bLower) {
+                        return -1;
+                    } else if (aLower > bLower) {
+                        return 1;
+                    }
+                    return 0;
+                });
+            }
+            return values.join(",");
         },
         getEmptyValue: function() { return new Set(); },
         rawHashStringToValue: function(hashString) {

@@ -264,10 +264,9 @@ describe 'HashParams', ->
                 newParams = params.without 'tags', 'z'
                 expect(newParams.values).toEqual {tags: setOf('a', 'b'), authors: setOf('Bob', 'Ned')}
     describe '.getHash()', ->
-        describe 'when constructed with foreground and background', ->
+        describe 'when constructed with strings "foreground" and "background"', ->
             params = null
-            beforeEach ->
-                params = new HashParams('foreground', 'background')
+            beforeEach -> params = new HashParams 'foreground', 'background'
             it 'with no values set', ->
                 expect(params.getHash()).toBe '#'
             it 'with one value set', ->
@@ -285,6 +284,30 @@ describe 'HashParams', ->
             it 'with null for one value', ->
                 params.values = {foreground: 'blue', background: null}
                 expect(params.getHash()).toBe "#foreground=blue"
+        describe 'when constructed with sets "tags" and "authors"', ->
+            params = null
+            beforeEach -> params = new HashParams 'tags:set', 'authors:set'
+            it 'with no values set', ->
+                expect(params.getHash()).toBe '#'
+            it 'with one value set', ->
+                params.values.tags = setOf 'a', 'b'
+                expect(params.getHash()).toBe '#tags=a,b'
+            it 'sorts values case-insensitively', ->
+                params.values.tags = setOf 'c', 'a', 'B'
+                expect(params.getHash()).toBe '#tags=a,B,c'
+            it 'with both values set', ->
+                params.values.tags = setOf 'a', 'b'
+                params.values.authors = setOf 'Bob', 'Ned'
+                expect(params.getHash()).toBe '#tags=a,b;authors=Bob,Ned'
+            it 'with one value missing', ->
+                params.values = {tags: setOf('a', 'b')}
+                expect(params.getHash()).toBe '#tags=a,b'
+            it 'with undefined for one value', ->
+                params.values = {tags: setOf('a', 'b'), authors: undefined}
+                expect(params.getHash()).toBe '#tags=a,b'
+            it 'with null for one value', ->
+                params.values = {tags: setOf('a', 'b'), authors: null}
+                expect(params.getHash()).toBe '#tags=a,b'
         describe 'encoding', ->
             encodes = (decoded, encoded) ->
                 # Use HashParams.types.scalar constructor since it allows ':' in name
