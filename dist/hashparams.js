@@ -57,10 +57,10 @@
             hashData.split(";").forEach(function(arg) {
                 var pair = arg.split("=");
                 var name = decodeURIComponent(pair[0]);
-                var paramString = decodeURIComponent(pair[1]);
+                var rawHashString = pair[1];
                 var param = this._findParam(name);
                 if (param) {
-                    callback(name, paramString, param);
+                    callback(name, rawHashString, param);
                 }
             }, this);
             return result;
@@ -84,8 +84,8 @@
         },
         setHash: function(hash) {
             var values = this._getEmptyValues();
-            this._forEachHashString(hash, function(name, paramString, param) {
-                values[name] = param.hashStringToValue(paramString);
+            this._forEachHashString(hash, function(name, rawHashString, param) {
+                values[name] = param.rawHashStringToValue(rawHashString);
             });
             this.values = values;
         },
@@ -103,7 +103,7 @@
 
     HashParams.types = {};
     HashParams.defineType = function(properties) {
-        var requiredProperties = "name getEmptyValue hashStringToValue";
+        var requiredProperties = "name getEmptyValue rawHashStringToValue";
         requiredProperties.split(" ").forEach(function(requiredProperty) {
             if (!(requiredProperty in properties)) {
                 throw new Error("Call to defineType is missing required property " + requiredProperty);
@@ -115,23 +115,25 @@
         }
         paramType.prototype = {
             getEmptyValue: properties.getEmptyValue,
-            hashStringToValue: properties.hashStringToValue
+            rawHashStringToValue: properties.rawHashStringToValue
         };
         HashParams.types[properties.name] = paramType;
     };
     HashParams.defineType({
         name: "scalar",
         getEmptyValue: function() { return ""; },
-        hashStringToValue: function(hashString) { return hashString; }
+        rawHashStringToValue: function(hashString) { return decodeURIComponent(hashString); }
     });
     HashParams.defineType({
         name: "set",
         getEmptyValue: function() { return new Set(); },
-        hashStringToValue: function(hashString) {
+        rawHashStringToValue: function(hashString) {
             // IE 11 doesn't support passing an array to new Set(), so do this the hard way
             var result = new Set();
             if (hashString !== "") {
-                hashString.split(",").forEach(function(value) { result.add(value); });
+                hashString.split(",").forEach(function(value) {
+                    result.add(decodeURIComponent(value));
+                });
             }
             return result;
         }

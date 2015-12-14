@@ -120,8 +120,8 @@ describe 'HashParams', ->
             it 'can set both values', ->
                 hashYieldsValues '#tags=A,B,C;authors=Bob,Ned',
                     {tags: setOf('A', 'B', 'C'), authors: setOf('Bob', 'Ned')}
-            xit 'can take values with encoded commas', ->
-                hashYieldsValues '#tags=A%2CB,C%2CD', {tags: setOf('A,B', 'C,d'), authors: setOf()}
+            it 'can take values with encoded commas', ->
+                hashYieldsValues '#tags=A%2CB,C%2CD', {tags: setOf('A,B', 'C,D'), authors: setOf()}
             it 'will not set values.foo', ->
                 hashYieldsValues '#foo=bar', {tags: setOf(), authors: setOf()}
         describe 'unencoding', ->
