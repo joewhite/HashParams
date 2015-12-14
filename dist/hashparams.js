@@ -33,7 +33,9 @@
             var newValues = {};
             this.params.forEach(function(param) {
                 if (param.name in this.values) {
-                    newValues[param.name] = this.values[param.name];
+                    var value = this.values[param.name];
+                    var clonedValue = param.cloneValue(value);
+                    newValues[param.name] = clonedValue;
                 }
             }, this);
             return newValues;
@@ -103,8 +105,13 @@
 
     HashParams.types = {};
     HashParams.defineType = function(properties) {
-        var requiredProperties = "name getEmptyValue rawHashStringToValue";
-        requiredProperties.split(" ").forEach(function(requiredProperty) {
+        var requiredProperties = [
+            "name",
+            "cloneValue",
+            "getEmptyValue",
+            "rawHashStringToValue"
+        ];
+        requiredProperties.forEach(function(requiredProperty) {
             if (!(requiredProperty in properties)) {
                 throw new Error("Call to defineType is missing required property " + requiredProperty);
             }
@@ -114,6 +121,7 @@
             this.name = name;
         }
         paramType.prototype = {
+            cloneValue: properties.cloneValue,
             getEmptyValue: properties.getEmptyValue,
             rawHashStringToValue: properties.rawHashStringToValue
         };
@@ -121,11 +129,17 @@
     };
     HashParams.defineType({
         name: "scalar",
+        cloneValue: function(value) { return value; },
         getEmptyValue: function() { return ""; },
         rawHashStringToValue: function(hashString) { return decodeURIComponent(hashString); }
     });
     HashParams.defineType({
         name: "set",
+        cloneValue: function(set) {
+            var result = new Set();
+            set.forEach(function(value) { result.add(value); });
+            return result;
+        },
         getEmptyValue: function() { return new Set(); },
         rawHashStringToValue: function(hashString) {
             // IE 11 doesn't support passing an array to new Set(), so do this the hard way
