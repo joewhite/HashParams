@@ -96,7 +96,7 @@
             var newValues = this._cloneValues();
             var param = this._findParam(name);
             if (param) {
-                newValues[name] = value;
+                newValues[name] = param.resolveWith(newValues[name], value);
             }
             newParams.values = newValues;
             return newParams;
@@ -109,7 +109,8 @@
             "name",
             "cloneValue",
             "getEmptyValue",
-            "rawHashStringToValue"
+            "rawHashStringToValue",
+            "resolveWith"
         ];
         requiredProperties.forEach(function(requiredProperty) {
             if (!(requiredProperty in properties)) {
@@ -123,7 +124,8 @@
         paramType.prototype = {
             cloneValue: properties.cloneValue,
             getEmptyValue: properties.getEmptyValue,
-            rawHashStringToValue: properties.rawHashStringToValue
+            rawHashStringToValue: properties.rawHashStringToValue,
+            resolveWith: properties.resolveWith
         };
         HashParams.types[properties.name] = paramType;
     };
@@ -131,7 +133,8 @@
         name: "scalar",
         cloneValue: function(value) { return value; },
         getEmptyValue: function() { return ""; },
-        rawHashStringToValue: function(hashString) { return decodeURIComponent(hashString); }
+        rawHashStringToValue: function(hashString) { return decodeURIComponent(hashString); },
+        resolveWith: function(oldValue, newValue) { return newValue; }
     });
     HashParams.defineType({
         name: "set",
@@ -149,6 +152,11 @@
                     result.add(decodeURIComponent(value));
                 });
             }
+            return result;
+        },
+        resolveWith: function(oldValue, newValue) {
+            var result = new Set();
+            newValue.forEach(function(value) { result.add(value); });
             return result;
         }
     });

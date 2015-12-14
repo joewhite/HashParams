@@ -183,6 +183,10 @@ describe 'HashParams', ->
                 it 'does not modify original', ->
                     params.with('tags', setOf('c', 'd'))
                     expect(params.values).toEqual {tags: setOf('a', 'b'), authors: setOf('Bob', 'Ned')}
+                it 'clones the passed-in value', ->
+                    newSet = setOf('c', 'd')
+                    newParams = params.with('tags', newSet)
+                    expect(newParams.values.tags).not.toBe(newSet)
                 it 'clones other values', ->
                     newParams = params.with('tags', setOf('c', 'd'))
                     expect(params.values.authors).not.toBe(newParams.values.authors)
