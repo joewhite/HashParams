@@ -126,12 +126,12 @@ describe 'HashParams', ->
                 hashYieldsValues '#tags=A%2CB,C%2CD', {tags: setOf('A,B', 'C,D'), authors: setOf()}
             it 'will not set values.foo', ->
                 hashYieldsValues '#foo=bar', {tags: setOf(), authors: setOf()}
-        describe 'string parameter unencoding', ->
+        describe 'string name unencoding', ->
             decodes = (encoded, decoded) ->
                 params = new HashParams('name' + decoded)
-                params.setHash '#name' + encoded + '=value' + encoded
+                params.setHash '#name' + encoded + '=value'
                 expected = {}
-                expected['name' + decoded] = 'value' + decoded
+                expected['name' + decoded] = 'value'
                 expect(params.values).toEqual expected
             accepts = (char) -> decodes char, char
             it 'decodes space', -> decodes '%20', ' '
@@ -141,16 +141,31 @@ describe 'HashParams', ->
             it 'accepts &', -> accepts '&'
             it 'accepts ,', -> accepts ','
             it 'decodes ;', -> decodes '%3B', ';'
-        describe 'set parameter unencoding', ->
+        describe 'string value unencoding', ->
             decodes = (encoded, decoded) ->
-                params = new HashParams('name' + decoded + ':set')
-                params.setHash '#name' + encoded + '=value1' + encoded + ',value2' + encoded
+                params = new HashParams('name')
+                params.setHash '#name=value' + encoded
                 expected = {}
-                expected['name' + decoded] = setOf('value1' + decoded, 'value2' + decoded)
+                expected['name'] = 'value' + decoded
                 expect(params.values).toEqual expected
             accepts = (char) -> decodes char, char
             it 'decodes space', -> decodes '%20', ' '
-            it 'decodes =', -> decodes '%3D', '='
+            it 'accepts =', -> accepts '='
+            it 'accepts !', -> accepts '!'
+            it 'accepts $', -> accepts '$'
+            it 'accepts &', -> accepts '&'
+            it 'accepts ,', -> accepts ','
+            it 'decodes ;', -> decodes '%3B', ';'
+        describe 'set value unencoding', ->
+            decodes = (encoded, decoded) ->
+                params = new HashParams('name:set')
+                params.setHash '#name=value1' + encoded + ',value2' + encoded
+                expected = {}
+                expected['name'] = setOf('value1' + decoded, 'value2' + decoded)
+                expect(params.values).toEqual expected
+            accepts = (char) -> decodes char, char
+            it 'decodes space', -> decodes '%20', ' '
+            it 'accepts =', -> accepts '='
             it 'accepts !', -> accepts '!'
             it 'accepts $', -> accepts '$'
             it 'accepts &', -> accepts '&'
@@ -380,12 +395,12 @@ describe 'HashParams', ->
                     valueTemplate = 'value$'
                 describe 'scalar', ->
                     beforeEach -> useScalar()
-                    itEncodes defaultEncodeChars + ',='
-                    itAccepts defaultAcceptChars
+                    itEncodes defaultEncodeChars + ','
+                    itAccepts defaultAcceptChars + '='
                 describe 'set', ->
                     beforeEach -> useSet()
-                    itEncodes defaultEncodeChars + ',='
-                    itAccepts defaultAcceptChars
+                    itEncodes defaultEncodeChars + ','
+                    itAccepts defaultAcceptChars + '='
             it 'encodes multiple characters', ->
                 params = new HashParams(new HashParams.types.scalar('name |'))
                 params.values['name |'] = 'value |'

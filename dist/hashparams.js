@@ -17,7 +17,7 @@
         };
     }
     var encodeName = getEncoder("=");
-    var encodeValue = getEncoder(",=");
+    var encodeValue = getEncoder(",");
     function HashParams() {
         var params;
         if (Array.isArray(arguments[0])) {
@@ -69,9 +69,12 @@
             var hashData = (hash || "").replace(/^#/, "");
             var result = {};
             hashData.split(";").forEach(function(arg) {
-                var pair = arg.split("=");
-                var name = decodeURIComponent(pair[0]);
-                var rawHashString = pair[1];
+                var equalIndex = arg.indexOf("=");
+                if (equalIndex < 0) {
+                    equalIndex = arg.length;
+                }
+                var name = decodeURIComponent(arg.substr(0, equalIndex));
+                var rawHashString = arg.substr(equalIndex + 1);
                 var param = this._findParam(name);
                 if (param) {
                     callback(name, rawHashString, param);
