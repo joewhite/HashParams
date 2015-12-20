@@ -16,8 +16,8 @@
             return string.replace(regexp, encodeURIComponent);
         };
     }
-    var encodeName = getEncoder("=");
-    var encodeValue = getEncoder(",");
+    var encodeNameString = getEncoder("=");
+    var encodeValueString = getEncoder(",");
     function HashParams() {
         var params;
         if (Array.isArray(arguments[0])) {
@@ -93,9 +93,9 @@
             var segments = [];
             this.params.forEach(function(param) {
                 var rawValue = this.values[param.name];
-                var encodedValue = param.encodeValue(rawValue, encodeValue);
+                var encodedValue = param.valueToRawHashString(rawValue, encodeValueString);
                 if (encodedValue) {
-                    var encodedName = encodeName(param.name);
+                    var encodedName = encodeNameString(param.name);
                     var segment = encodedName + "=" + encodedValue;
                     segments.push(segment);
                 }
@@ -136,11 +136,11 @@
         var requiredProperties = [
             "name",
             "cloneValue",
-            "encodeValue",
             "getEmptyValue",
             "rawHashStringToValue",
             "resolveWith",
-            "resolveWithout"
+            "resolveWithout",
+            "valueToRawHashString"
         ];
         requiredProperties.forEach(function(requiredProperty) {
             if (!(requiredProperty in properties)) {
@@ -153,18 +153,17 @@
         }
         paramType.prototype = {
             cloneValue: properties.cloneValue,
-            encodeValue: properties.encodeValue,
             getEmptyValue: properties.getEmptyValue,
             rawHashStringToValue: properties.rawHashStringToValue,
             resolveWith: properties.resolveWith,
-            resolveWithout: properties.resolveWithout
+            resolveWithout: properties.resolveWithout,
+            valueToRawHashString: properties.valueToRawHashString
         };
         HashParams.types[properties.name] = paramType;
     };
     HashParams.defineType({
         name: "scalar",
         cloneValue: function(value) { return value; },
-        encodeValue: function(value, encodeString) { return encodeString(value || ""); },
         getEmptyValue: function() { return ""; },
         rawHashStringToValue: function(hashString) { return decodeURIComponent(hashString); },
         resolveWith: function(oldValue, newValue) {
@@ -175,7 +174,8 @@
         },
         resolveWithout: function() {
             return "";
-        }
+        },
+        valueToRawHashString: function(value, encodeString) { return encodeString(value || ""); }
     });
     HashParams.defineType({
         name: "set",
@@ -183,25 +183,6 @@
             var result = new Set();
             set.forEach(function(value) { result.add(value); });
             return result;
-        },
-        encodeValue: function(set, encodeString) {
-            var values = [];
-            if (set) {
-                set.forEach(function(value) {
-                    values.push(value);
-                });
-                values.sort(function(a, b) {
-                    var aLower = a.toLowerCase();
-                    var bLower = b.toLowerCase();
-                    if (aLower < bLower) {
-                        return -1;
-                    } else if (aLower > bLower) {
-                        return 1;
-                    }
-                    return 0;
-                });
-            }
-            return values.map(encodeString).join(",");
         },
         getEmptyValue: function() { return new Set(); },
         rawHashStringToValue: function(hashString) {
@@ -237,6 +218,25 @@
                 return oldValue;
             }
             return new Set();
+        },
+        valueToRawHashString: function(set, encodeString) {
+            var values = [];
+            if (set) {
+                set.forEach(function(value) {
+                    values.push(value);
+                });
+                values.sort(function(a, b) {
+                    var aLower = a.toLowerCase();
+                    var bLower = b.toLowerCase();
+                    if (aLower < bLower) {
+                        return -1;
+                    } else if (aLower > bLower) {
+                        return 1;
+                    }
+                    return 0;
+                });
+            }
+            return values.map(encodeString).join(",");
         }
     });
 
