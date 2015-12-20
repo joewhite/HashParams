@@ -309,7 +309,8 @@ describe 'HashParams', ->
                 params.values = {tags: setOf('a', 'b'), authors: null}
                 expect(params.getHash()).toBe '#tags=a,b'
         describe 'encoding', ->
-            defaultEncodeChars = '\0\n "#%,;<=>[\\]^`{|}\u007F©▶'
+            # These defaults don't include ',' or '='; those should be specified manually
+            defaultEncodeChars = '\0\n "#%;<>[\\]^`{|}\u007F©▶'
             defaultAcceptChars = "!$&'()*+-./09:?@AZ_az~"
             getDisplayText = (char) ->
                 {
@@ -365,8 +366,8 @@ describe 'HashParams', ->
                     valueTemplate = 'value'
                 # Names should always be encoded consistently, regardless of parameter type
                 itEncodesNamesAppropriately = ->
-                    itEncodes defaultEncodeChars
-                    itAccepts defaultAcceptChars
+                    itEncodes defaultEncodeChars + '='
+                    itAccepts defaultAcceptChars + ','
                 describe 'for scalars', ->
                     beforeEach -> useScalar()
                     itEncodesNamesAppropriately()
@@ -379,11 +380,11 @@ describe 'HashParams', ->
                     valueTemplate = 'value$'
                 describe 'scalar', ->
                     beforeEach -> useScalar()
-                    itEncodes defaultEncodeChars
+                    itEncodes defaultEncodeChars + ',='
                     itAccepts defaultAcceptChars
                 describe 'set', ->
                     beforeEach -> useSet()
-                    itEncodes defaultEncodeChars
+                    itEncodes defaultEncodeChars + ',='
                     itAccepts defaultAcceptChars
             it 'encodes multiple characters', ->
                 params = new HashParams(new HashParams.types.scalar('name |'))

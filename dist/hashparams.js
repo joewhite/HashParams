@@ -2,8 +2,10 @@
 (function(window) {
     "use strict";
     function getEncoder(extraEncodedCharacters) {
+        // Based on RFC 3986 (see http://stackoverflow.com/a/2849800/87399), but we
+        // also encode ';', and possibly ',' and '=', since we give them special meaning.
         var characterClass = "^-!$&'()*+./0-9:?@A-Z_a-z~";
-        [",", "=", ";"].forEach(function (char) {
+        [",", "="].forEach(function (char) {
             if ((extraEncodedCharacters || "").indexOf(char) < 0) {
                 characterClass += char;
             }
@@ -14,8 +16,8 @@
             return string.replace(regexp, encodeURIComponent);
         };
     }
-    var encodeName = getEncoder(",=;");
-    var encodeValue = getEncoder(",=;");
+    var encodeName = getEncoder("=");
+    var encodeValue = getEncoder(",=");
     function HashParams() {
         var params;
         if (Array.isArray(arguments[0])) {
