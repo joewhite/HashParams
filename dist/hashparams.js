@@ -1,11 +1,21 @@
 /* export HashParams */
 (function(window) {
     "use strict";
-    function encode(string) {
-        // Based on RFC 3986 (see http://stackoverflow.com/a/2849800/87399), but
-        // we also encode ',', ';', and '=' since we give them special meaning.
-        return string.replace(/[^-!$&'()*+./0-9:?@A-Z_a-z~]/g, encodeURIComponent);
+    function getEncoder(extraEncodedCharacters) {
+        var characterClass = "^-!$&'()*+./0-9:?@A-Z_a-z~";
+        [",", "=", ";"].forEach(function (char) {
+            if ((extraEncodedCharacters || "").indexOf(char) < 0) {
+                characterClass += char;
+            }
+        });
+        var expression = "[" + characterClass + "]";
+        var regexp = new RegExp(expression, "g");
+        return function encode(string) {
+            return string.replace(regexp, encodeURIComponent);
+        };
     }
+    var encodeName = getEncoder(",=;");
+    var encodeValue = getEncoder(",=;");
     function HashParams() {
         var params;
         if (Array.isArray(arguments[0])) {
@@ -78,9 +88,9 @@
             var segments = [];
             this.params.forEach(function(param) {
                 var rawValue = this.values[param.name];
-                var encodedValue = param.encodeValue(rawValue, encode);
+                var encodedValue = param.encodeValue(rawValue, encodeValue);
                 if (encodedValue) {
-                    var encodedName = encode(param.name);
+                    var encodedName = encodeName(param.name);
                     var segment = encodedName + "=" + encodedValue;
                     segments.push(segment);
                 }
