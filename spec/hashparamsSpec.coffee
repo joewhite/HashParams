@@ -309,53 +309,83 @@ describe 'HashParams', ->
                 params.values = {tags: setOf('a', 'b'), authors: null}
                 expect(params.getHash()).toBe '#tags=a,b'
         describe 'encoding', ->
-            encodes = (decoded, encoded) ->
-                # Use HashParams.types.scalar constructor since it allows ':' in name
-                params = new HashParams(new HashParams.types.scalar('name' + decoded))
-                params.values['name' + decoded] = 'value' + decoded
-                expect(params.getHash()).toBe '#name' + encoded + '=value' + encoded
-            accepts = (char) -> encodes char, char
-            it 'encodes \\0', -> encodes '\0', '%00'
-            it 'encodes \\n', -> encodes '\n', '%0A'
-            it 'encodes space', -> encodes ' ', '%20'
-            it 'accepts !', -> accepts '!'
-            it 'encodes "', -> encodes '"', '%22'
-            it 'encodes #', -> encodes '#', '%23'
-            it 'accepts $', -> accepts '$'
-            it 'encodes %', -> encodes '%', '%25'
-            it 'accepts &', -> accepts '&'
-            it 'accepts \'', -> accepts '\''
-            it 'accepts (', -> accepts '('
-            it 'accepts )', -> accepts ')'
-            it 'accepts *', -> accepts '*'
-            it 'accepts +', -> accepts '+'
-            it 'encodes ,', -> encodes ',', '%2C'
-            it 'accepts -', -> accepts '-'
-            it 'accepts .', -> accepts '.'
-            it 'accepts /', -> accepts '/'
-            it 'accepts 0', -> accepts '0'
-            it 'accepts 9', -> accepts '9'
-            it 'accepts :', -> accepts ':'
-            it 'encodes ;', -> encodes ';', '%3B'
-            it 'encodes <', -> encodes '<', '%3C'
-            it 'encodes =', -> encodes '=', '%3D'
-            it 'encodes >', -> encodes '>', '%3E'
-            it 'accepts ?', -> accepts '?'
-            it 'accepts @', -> accepts '@'
-            it 'accepts A', -> accepts 'A'
-            it 'accepts Z', -> accepts 'Z'
-            it 'encodes [', -> encodes '[', '%5B'
-            it 'encodes \\', -> encodes '\\', '%5C'
-            it 'encodes ]', -> encodes ']', '%5D'
-            it 'encodes ^', -> encodes '^', '%5E'
-            it 'accepts _', -> accepts '_'
-            it 'encodes `', -> encodes '`', '%60'
-            it 'accepts a', -> accepts 'a'
-            it 'accepts z', -> accepts 'z'
-            it 'encodes {', -> encodes '{', '%7B'
-            it 'encodes |', -> encodes '|', '%7C'
-            it 'encodes }', -> encodes '}', '%7D'
-            it 'accepts ~', -> accepts '~'
-            it 'encodes ©', -> encodes '©', '%C2%A9'
-            it 'encodes ▶', -> encodes '▶', '%E2%96%B6'
-            it 'encodes multiple characters', -> encodes ' |', '%20%7C'
+            defaultEncodeChars = '\0\n "#%,;<=>[\\]^`{|}\u007F©▶'
+            defaultAcceptChars = "!$&'()*+-./09:?@AZ_az~"
+            getDisplayText = (char) ->
+                {
+                    '\0': '\\0',
+                    '\n': '\\n',
+                    ' ': 'space',
+                    '\u007F': 'DEL'
+                }[char] || char
+            getExpectedEncoding = (char) ->
+                {
+                    '\0': '%00', '\n': '%0A',
+                    ' ': '%20', '"': '%22', '#': '%23', '%': '%25', ',': '%2C',
+                    ';': '%3B', '<': '%3C', '=': '%3D', '>': '%3E',
+                    '[': '%5B', '\\': '%5C', ']': '%5D', '^': '%5E',
+                    '`': '%60',
+                    '{': '%7B', '|': '%7C', '}': '%7D', '\u007F': '%7F',
+                    '©': '%C2%A9',
+                    '▶': '%E2%96%B6'
+                }[char] || throw new Error('Don\'t know how to encode character in tests: ' + getDisplayText(char))
+            expectCharEncodesAs = (char, rawName, rawValue, encodedName, encodedValue) ->
+                params = createParams(rawName)
+                params.values[rawName] = rawStringToValue rawValue
+                expect(params.getHash()).toBe '#' + encodedName + '=' + encodedValue
+            itEncodes = (chars) ->
+                chars.split('').forEach (char) ->
+                    it 'encodes ' + getDisplayText(char), ->
+                        rawName = nameTemplate.replace('$', char)
+                        rawValue = valueTemplate.replace('$', char)
+                        encodedName = nameTemplate.replace('$', getExpectedEncoding(char))
+                        encodedValue = valueTemplate.replace('$', getExpectedEncoding(char))
+                        expectCharEncodesAs char, rawName, rawValue, encodedName, encodedValue
+            itAccepts = (chars) ->
+                chars.split('').forEach (char) ->
+                    it 'accepts ' + getDisplayText(char), ->
+                        rawName = nameTemplate.replace('$', char)
+                        rawValue = valueTemplate.replace('$', char)
+                        expectCharEncodesAs char, rawName, rawValue, rawName, rawValue
+            nameTemplate = null
+            valueTemplate = null
+            createParams = (name) ->
+            rawStringToValue = (string) ->
+            useScalar = ->
+                createParams = (name) -> new HashParams(new HashParams.types.scalar(name))
+                rawStringToValue = (string) -> string
+                this
+            useSet = ->
+                createParams = (name) -> new HashParams(new HashParams.types.set(name))
+                rawStringToValue = (string) -> setOf string
+                this
+            describe 'names', ->
+                beforeEach ->
+                    nameTemplate = 'name$'
+                    valueTemplate = 'value'
+                # Names should always be encoded consistently, regardless of parameter type
+                itEncodesNamesAppropriately = ->
+                    itEncodes defaultEncodeChars
+                    itAccepts defaultAcceptChars
+                describe 'for scalars', ->
+                    beforeEach -> useScalar()
+                    itEncodesNamesAppropriately()
+                describe 'for sets', ->
+                    beforeEach -> useSet()
+                    itEncodesNamesAppropriately()
+            describe 'values', ->
+                beforeEach ->
+                    nameTemplate = 'name'
+                    valueTemplate = 'value$'
+                describe 'scalar', ->
+                    beforeEach -> useScalar()
+                    itEncodes defaultEncodeChars
+                    itAccepts defaultAcceptChars
+                describe 'set', ->
+                    beforeEach -> useSet()
+                    itEncodes defaultEncodeChars
+                    itAccepts defaultAcceptChars
+            it 'encodes multiple characters', ->
+                params = new HashParams(new HashParams.types.scalar('name |'))
+                params.values['name |'] = 'value |'
+                expect(params.getHash()).toBe '#name%20%7C=value%20%7C'

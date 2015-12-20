@@ -186,7 +186,7 @@
                     return 0;
                 });
             }
-            return values.join(",");
+            return values.map(encodeString).join(",");
         },
         getEmptyValue: function() { return new Set(); },
         rawHashStringToValue: function(hashString) {
