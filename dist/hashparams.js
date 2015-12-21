@@ -2,6 +2,9 @@
 (function(window) {
     "use strict";
     function getEncoder(extraEncodedCharacters) {
+        if (typeof extraEncodedCharacters !== "string") {
+            throw new Error("Invalid type passed to getEncoder");
+        }
         // Based on RFC 3986 (see http://stackoverflow.com/a/2849800/87399), but we
         // also encode ';', and possibly ',' and '=', since we give them special meaning.
         var characterClass = "^-!$&'()*+./0-9:?@A-Z_a-z~";
@@ -17,7 +20,6 @@
         };
     }
     var encodeNameString = getEncoder("=");
-    var encodeValueString = getEncoder(",");
     function HashParams() {
         var params;
         if (Array.isArray(arguments[0])) {
@@ -93,7 +95,7 @@
             var segments = [];
             this.params.forEach(function(param) {
                 var rawValue = this.values[param.name];
-                var encodedValue = param.valueToRawHashString(rawValue, encodeValueString);
+                var encodedValue = param.valueToRawHashString(rawValue, param.encodeValueString);
                 if (encodedValue) {
                     var encodedName = encodeNameString(param.name);
                     var segment = encodedName + "=" + encodedValue;
@@ -153,6 +155,7 @@
         }
         paramType.prototype = {
             cloneValue: properties.cloneValue,
+            encodeValueString: getEncoder(properties.extraEncodedCharacters || ""),
             getEmptyValue: properties.getEmptyValue,
             rawHashStringToValue: properties.rawHashStringToValue,
             resolveWith: properties.resolveWith,
@@ -184,6 +187,7 @@
             set.forEach(function(value) { result.add(value); });
             return result;
         },
+        extraEncodedCharacters: ",",
         getEmptyValue: function() { return new Set(); },
         rawHashStringToValue: function(hashString) {
             // IE 11 doesn't support passing an array to new Set(), so do this the hard way

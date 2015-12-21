@@ -395,8 +395,8 @@ describe 'HashParams', ->
                     valueTemplate = 'value$'
                 describe 'scalar', ->
                     beforeEach -> useScalar()
-                    itEncodes defaultEncodeChars + ','
-                    itAccepts defaultAcceptChars + '='
+                    itEncodes defaultEncodeChars
+                    itAccepts defaultAcceptChars + ',='
                 describe 'set', ->
                     beforeEach -> useSet()
                     itEncodes defaultEncodeChars + ','
