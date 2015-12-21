@@ -16,7 +16,7 @@ var newUrl = params.with("foreground", "red").getHash();
 // newUrl is "#foreground=red;background=green;tags=a,b"
 ```
 
-HashParams is tested in the evergreen browsers (FireFox, Chrome, and IE 11). It may or may not work in older browsers.
+HashParams is tested in the evergreen browsers (FireFox, Chrome, IE 11, and Edge). It may or may not work in older browsers.
 
 ## Installing
 
@@ -217,6 +217,7 @@ If you want something from the "possible future features" list, or something els
 
 ## Release history
 
+* 0.2.0: Added the `set` type and the `without` method.
 * 0.1.0: First release. Scalar string values only. `setHash`, `with`, and `getHash` methods.
 
 ## License
